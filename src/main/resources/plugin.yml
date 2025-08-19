@@ -1,0 +1,9 @@
+name: NaturalCoinFlip
+version: '${project.version}'
+main: me.flasser.naturalcoinflip.NaturalCoinFlip
+
+commands:
+  cf:
+    description: CoinFlip main command
+    usage: /cf <subcommand>
+    aliases: [coinflip, cflip, coinf]
