@@ -1,5 +1,6 @@
 package me.flasser.naturalcoinflip.menues.cfMenu;
 
+import me.flasser.naturalcoinflip.managers.FileManager;
 import me.flasser.naturalcoinflip.managers.FlipManager;
 import me.flasser.naturalcoinflip.utility.itemUtil.NamedItem;
 import org.bukkit.Bukkit;
@@ -10,12 +11,13 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class CFMenu {
     public static void openCFMenu(Player player, Integer page) {
-        Inventory menu = Bukkit.createInventory(null, 54, "§e§lCOINFLIP §8- §fPAGE %page%".replace("%page%", page.toString()));
+        Inventory menu = Bukkit.createInventory(null, 54, FileManager.getMessage("inventory_name") + (page+1));
 
         ItemStack yellowPane = new NamedItem(new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte) 4),
                 "§7"
@@ -35,26 +37,46 @@ public class CFMenu {
 
         if (page > 0) {
             ItemStack backArrow = new NamedItem(Material.ARROW, 1,
-                    "§f§nLast Page"
+                    FileManager.getMessage("last_page")
             ).get();
             menu.setItem(45, backArrow);
         }
         ItemStack forwardArrow = new NamedItem(Material.ARROW, 1,
-                "§f§nNext Page"
+                FileManager.getMessage("next_page")
         ).get();
         menu.setItem(53, forwardArrow);
 
         ItemStack infoBook = new NamedItem(Material.BOOK_AND_QUILL, 1,
-                "§f§nNext Page",
-                "", "§fDette er en oversigt som indeholder alle", "§f§eCoinFlips §fsom lige nu er aktive på serveren.", "", "§eKommandoer:", "§7 §8- §f/cf", "§7 §8- §f/cf opret (antal)", "§7 §8- §f/cf delete"
+                FileManager.getMessage("info_book_name"),
+                FileManager.getListMessage("info_book_lore")
         ).get();
         menu.setItem(49, infoBook);
 
-        Integer wins = FlipManager.getPlayerInfo(player.getUniqueId()).wins;
-        Integer loses = FlipManager.getPlayerInfo(player.getUniqueId()).loses;
-        ItemStack infoHead = new NamedItem(Material.SKULL_ITEM, 1,
-                "§f§lINFO",
-                "", "§8┌ §7Total§8: §f" + (wins+loses), "§8├ §7Wins§8: §f" + wins, "§8└ §7Loses§8: §f" + loses, ""
+        FlipManager.PlayerInfo info = FlipManager.getPlayerInfo(player.getUniqueId());
+
+        int wins = 0;
+        int loses = 0;
+
+        if (info != null) {
+            if (info.wins != null) wins = info.wins;
+            if (info.loses != null) loses = info.loses;
+        }
+
+        List<String> newestLoreList = new ArrayList<>();
+        String newLore;
+        for (String lore : FileManager.getListMessage("stats_head_lore")) {
+            newLore = lore
+                    .replace("{wins}", String.valueOf(wins))
+                    .replace("{loses}", String.valueOf(loses))
+                    .replace("{total}", String.valueOf(wins+loses));
+
+            newestLoreList.add(newLore);
+        }
+        String[] newestLore = newestLoreList.toArray(new String[0]);
+
+        ItemStack infoHead = new NamedItem(Material.SKULL_ITEM, 1, (byte) 3,
+                FileManager.getMessage("stats_head_name"),
+                newestLore
         ).get();
 
         SkullMeta meta = (SkullMeta) infoHead.getItemMeta();
@@ -71,11 +93,22 @@ public class CFMenu {
             slot++;
             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID);
             Integer amount = FlipManager.getFlipInfo(UUID).amount;
+
+            newestLoreList = new ArrayList<>();
+            for (String lore : FileManager.getListMessage("flip_lore")) {
+                newLore = lore
+                        .replace("{player}", offlinePlayer.getName())
+                        .replace("{amount}", amount.toString());
+
+                newestLoreList.add(newLore);
+            }
+            newestLore = newestLoreList.toArray(new String[0]);
+
             if (page == 0) {
                 if (slot <= 36) {
-                    ItemStack flipHead = new NamedItem(Material.SKULL_ITEM, 1,
-                            "§c§lCOINFLIP",
-                            "", "§8┌ §7This coinflip was created", "§8└ §7by §f" + offlinePlayer.getName(), "", "§8│ §7Betted amount: §f" +amount.toString(), "", "§8➥ §7Click here to accept this coinflip."
+                    ItemStack flipHead = new NamedItem(Material.SKULL_ITEM, 1, (byte) 3,
+                            FileManager.getMessage("flip_name"),
+                            newestLore
                     ).get();
 
                     meta = (SkullMeta) flipHead.getItemMeta();
@@ -89,9 +122,9 @@ public class CFMenu {
             }
             else {
                 if (slot >= 36*page && slot < 36*page+36) {
-                    ItemStack flipHead = new NamedItem(Material.SKULL_ITEM, 1,
-                            "§c§lCOINFLIP",
-                            "", "§8┌ §7This coinflip was created", "§8└ §7by §f" + offlinePlayer.getName(), "", "§8│ §7Betted amount: §f" +amount.toString(), "", "§8➥ §7Click here to accept this coinflip."
+                    ItemStack flipHead = new NamedItem(Material.SKULL_ITEM, 1, (byte) 3,
+                            FileManager.getMessage("flip_name"),
+                            newestLore
                     ).get();
 
                     meta = (SkullMeta) flipHead.getItemMeta();

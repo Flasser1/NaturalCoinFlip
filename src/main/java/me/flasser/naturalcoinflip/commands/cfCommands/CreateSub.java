@@ -1,6 +1,7 @@
-package me.flasser.naturalcoinflip.commands;
+package me.flasser.naturalcoinflip.commands.cfCommands;
 
 import me.flasser.naturalcoinflip.NaturalCoinFlip;
+import me.flasser.naturalcoinflip.managers.FileManager;
 import me.flasser.naturalcoinflip.utility.commandUtil.SubCommand;
 import me.flasser.naturalcoinflip.managers.FlipManager;
 import org.bukkit.Sound;
@@ -10,7 +11,7 @@ import org.bukkit.entity.Player;
 public class CreateSub extends SubCommand {
 
     public CreateSub(String name, String... aliases) {
-        super("create", "make", "put");
+        super("create",  "make", "put");
     }
 
     @Override
@@ -29,13 +30,13 @@ public class CreateSub extends SubCommand {
         Player player = (Player) sender;
 
         if (FlipManager.hasFlip(player.getUniqueId())) {
-            player.sendMessage("§7You already have a coinflip up.");
+            player.sendMessage(FileManager.getMessage("flip_already_up"));
             player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 1.0f, 1.0f);
             return;
         }
 
         if (args.length < 2) {
-            player.sendMessage("§7You need to specify the amount you want to bet.");
+            player.sendMessage(FileManager.getMessage("amount_not_specified"));
             player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 1.0f, 1.0f);
             return;
         }
@@ -43,18 +44,23 @@ public class CreateSub extends SubCommand {
         Integer amount = Integer.valueOf(args[1]);
 
         if (amount < NaturalCoinFlip.getInstance().getConfig().getInt("minFlip")) {
-            player.sendMessage("§7This amount is below the minimum amount of §f$" + NaturalCoinFlip.getInstance().getConfig().getInt("minFlip") + "§7.");
+            player.sendMessage(FileManager.getMessage("below_min")
+                    .replace("{min}", ""+NaturalCoinFlip.getInstance().getConfig().getInt("minFlip")
+            ));
             player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 1.0f, 1.0f);
             return;
         }
 
         if (!(NaturalCoinFlip.getEcon().getBalance(player) >= amount)) {
-            player.sendMessage("§7You do not have the sufficient funds to create this bet.");
+            player.sendMessage(FileManager.getMessage("insufficient_funds_create"));
             player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 1.0f, 1.0f);
             return;
         }
 
+        FlipManager.updateSQLPlayer(player.getUniqueId());
         FlipManager.addFlip(player.getUniqueId(), amount);
+        NaturalCoinFlip.getEcon().withdrawPlayer(player, amount);
+        player.sendMessage(FileManager.getMessage("flip_created"));
 
     }
 }

@@ -21,6 +21,10 @@ public class NamedItem {
         this.item = applyMeta(new ItemStack(material, amount), name, lore.length == 0 ? null : Arrays.asList(lore));
     }
 
+    public NamedItem(Material material, int amount, byte bytes, String name, String... lore) {
+        this.item = applyMeta(new ItemStack(material, amount, bytes), name, lore.length == 0 ? null : Arrays.asList(lore));
+    }
+
     private ItemStack applyMeta(ItemStack item, String name, List<String> lore) {
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {

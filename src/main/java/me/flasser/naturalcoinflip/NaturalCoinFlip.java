@@ -1,8 +1,10 @@
 package me.flasser.naturalcoinflip;
 
-import me.flasser.naturalcoinflip.commands.CoinFlipGroup;
+import me.flasser.naturalcoinflip.commands.cfCommands.CoinFlipGroup;
+import me.flasser.naturalcoinflip.commands.cfaCommands.CoinFlipAdminGroup;
 import me.flasser.naturalcoinflip.managers.FileManager;
 import me.flasser.naturalcoinflip.managers.SQLManager;
+import me.flasser.naturalcoinflip.menues.cfMenu.CFMenuListener;
 import net.milkbowl.vault.economy.Economy;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -35,7 +37,10 @@ public final class NaturalCoinFlip extends JavaPlugin {
         int pluginId = 25176;
         Metrics metrics = new Metrics(this, pluginId);
 
+        getServer().getPluginManager().registerEvents(new CFMenuListener(), this);
+
         getCommand("cf").setExecutor(new CoinFlipGroup());
+        getCommand("cfa").setExecutor(new CoinFlipAdminGroup());
 
     }
 

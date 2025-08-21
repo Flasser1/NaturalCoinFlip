@@ -1,0 +1,80 @@
+#This is the messages file
+#In here you will find all messages that the plugin can send.
+#You can edit all of these messages to your liking.
+
+#In each segment you can find information on what it contains.
+#But you can also find information on what placeholders you can use there!
+
+#List of all error messages
+flip_already_up: "&7You already have a coinflip up."
+flip_not_up: "&7You don't have any flips up."
+amount_not_specified: "&7You need to specify the amount you want to bet."
+below_min: "&7This amount is below the minimum amount of &f${min}&7."
+insufficient_funds_create: "&7You do not have the sufficient funds to create this bet."
+flip_already_taken: "&7This coinflip is either already taken, or does not exist."
+click_own_flip: "&7You can't take your own coinflip."
+insufficient_funds_take: "&7You do not have sufficient funds for this coinflip."
+
+#Timer messages
+countdown: "&7Finding a winner in &f{timer}s"
+
+#Result messages
+win: "&7You won this coinflip of &f${amount}"
+loss: "&7You lost this coinflip of &f${amount}"
+
+#Command-success messages
+flip_created: "&7You successfully created a flip."
+flip_deleted: "&7You successfully deleted your flip."
+
+#Admin command stuff
+player_not_specified: "&7You need to specify a player."
+others_flip_not_up: "&7This player does not have any flips up."
+others_flip_deleted: "&7You successfully deleted a flip."
+others_flip_stats:
+  - "&f&l{name}"
+  - ""
+  - "&7Wins&8: &f{won}"
+  - "&7Losses&8: &f{lost}"
+  - "&7Total&8: &f{total}"
+others_flip_info:
+  - "&f&l{player}"
+  - ""
+  - "&7Player&8: &f{player}"
+  - "&7Date&8: &f{date}"
+  - "&7Amount&8: &f{amount}"
+addwin_not_specified: "&7You need to specify the amount you want to add."
+addwin_added: "&7You have successfully added {amount} to {player}'s wins."
+player_not_joined: "&7That player has not played before."
+
+#Menus
+inventory_name: "&e&lCOINFLIP &8- &fPAGE "
+last_page: "&f&nLast Page"
+next_page: "&f&nNext Page"
+info_book_name: "&f&nINFO"
+info_book_lore:
+    - ""
+    - "&7This is an overview of all"
+    - "&7active &fcoinflips &7on the server right now."
+    - ""
+    - "&7Commands:"
+    - "&7 &8- &f/cf"
+    - "&7 &8- &f/cf create (amount)"
+    - "&7 &8- &f/cf delete"
+    - ""
+stats_head_name: "&f&lSTATS"
+stats_head_lore:
+  - ""
+  - "&8┌ &7Total&8: &f{total}"
+  - "&8├ &7Wins&8: &f{wins}"
+  - "&8└ &7Loses&8: &f{loses}"
+  - ""
+flip_name: "&c&lCOINFLIP"
+flip_lore:
+  - ""
+  - "&8┌ &7This coinflip was created"
+  - "&8└ &7by &f{player}"
+  - ""
+  - "&8│ &7Betted amount: &f{amount}"
+  - ""
+  - "&8➥ &7Click here to accept this coinflip."
+  - ""

@@ -1,12 +1,15 @@
 package me.flasser.naturalcoinflip.menues.cfMenu;
 
 import me.flasser.naturalcoinflip.NaturalCoinFlip;
+import me.flasser.naturalcoinflip.managers.FileManager;
 import me.flasser.naturalcoinflip.managers.FlipManager;
-import me.flasser.naturalcoinflip.utility.actionbarUtil;
+import me.flasser.naturalcoinflip.utility.misc.ActionbarUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.meta.SkullMeta;
 
@@ -15,18 +18,25 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-public class CFMenuListener {
+public class CFMenuListener implements Listener {
+
+    @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
         Player player = (Player) e.getWhoClicked();
 
-        if (!e.getClickedInventory().getName().contains("§e§lCOINFLIP §8- §fPAGE")) {
+        if (e.getClickedInventory() == null) {
             return;
         }
 
-        Integer page = Integer.valueOf(e.getClickedInventory().getName().replace("§e§lCOINFLIP §8- §fPAGE ", ""));
+        if (!e.getClickedInventory().getName().contains(FileManager.getMessage("inventory_name"))) {
+            return;
+        }
+
+        Integer page = Integer.valueOf(e.getClickedInventory().getName().replace(FileManager.getMessage("inventory_name"), ""));
 
         e.setCancelled(true);
         if (e.getCurrentItem().getType() == Material.ARROW) {
+            player.playSound(player.getLocation(), Sound.WOOD_CLICK, 1.0f, 1.0f);
             if (e.getRawSlot() == 53) {
                 CFMenu.openCFMenu(player, page);
             } else if (e.getRawSlot() == 45) {
@@ -34,27 +44,31 @@ public class CFMenuListener {
             }
         }
 
-        if (e.getCurrentItem().getType() == Material.SKULL_ITEM) {
+        if (e.getCurrentItem().getType() == Material.STAINED_GLASS_PANE || e.getCurrentItem().getType() == Material.BOOK_AND_QUILL) {
+            player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 1.0f, 1.0f);
+        }
+
+        if (e.getCurrentItem().getType() == Material.SKULL_ITEM && !e.getClickedInventory().getName().contains(FileManager.getMessage("stats_head_name"))) {
             player.closeInventory();
             SkullMeta meta = (SkullMeta) e.getCurrentItem().getItemMeta();
-            UUID UUID = java.util.UUID.fromString(meta.getOwner());
+            UUID UUID = Bukkit.getOfflinePlayer(meta.getOwner()).getUniqueId();
 
             if (!FlipManager.hasFlip(UUID)) {
-                player.sendMessage("§7This coinflip is either already taken, or does not exist.");
+                player.sendMessage(FileManager.getMessage("flip_already_taken"));
                 player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 1.0f, 1.0f);
                 return;
             }
 
             if (UUID == player.getUniqueId()) {
-                player.sendMessage("§7You can't take your own coinflip.");
+                player.sendMessage(FileManager.getMessage("click_own_flip"));
                 player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 1.0f, 1.0f);
                 return;
             }
 
             Integer amount = FlipManager.getFlipInfo(UUID).amount;
 
-            if (NaturalCoinFlip.getEcon().getBalance(String.valueOf(UUID)) < amount) {
-                player.sendMessage("§7You do not have sufficient funds for this coinflip.");
+            if (NaturalCoinFlip.getEcon().getBalance(player) < amount) {
+                player.sendMessage(FileManager.getMessage("insufficient_funds_take"));
                 player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 1.0f, 1.0f);
                 return;
             }
@@ -66,8 +80,8 @@ public class CFMenuListener {
                 int secondsLeft = timer - i;
 
                 Bukkit.getScheduler().runTaskLater(NaturalCoinFlip.getInstance(), () -> {
-                    actionbarUtil.sendActionBar(player, "§7Finding a winner in §f" + secondsLeft + "s");
-                    actionbarUtil.sendActionBar(Bukkit.getPlayer(UUID), "§7Finding a winner in §f" + secondsLeft + "s");
+                    ActionbarUtil.sendActionBar(player, FileManager.getMessage("countdown").replace("{timer}", String.valueOf(secondsLeft)));
+                    ActionbarUtil.sendActionBar(Bukkit.getPlayer(UUID), FileManager.getMessage("countdown").replace("{timer}", String.valueOf(secondsLeft)));
 
                     player.playSound(player.getLocation(), Sound.WOOD_CLICK, 1.0f, 1.0f);
                     Bukkit.getPlayer(UUID).playSound(Bukkit.getPlayer(UUID).getLocation(), Sound.WOOD_CLICK, 1.0f, 1.0f);
@@ -88,11 +102,17 @@ public class CFMenuListener {
 
                 NaturalCoinFlip.getEcon().depositPlayer(winner, amount*2);
 
-                actionbarUtil.sendActionBar(winner, "§7You won this coinflip of §f$"+ amount*2);
-                actionbarUtil.sendActionBar(loser, "§7You lost this coinflip of §f$"+ amount*2);
+                ActionbarUtil.sendActionBar(winner, FileManager.getMessage("win").replace("{amount}", String.valueOf(amount*2)));
+                ActionbarUtil.sendActionBar(loser, FileManager.getMessage("loss").replace("{amount}", String.valueOf(amount*2)));
 
                 winner.playSound(winner.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
                 loser.playSound(loser.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+
+                FlipManager.updateSQLPlayer(winner.getUniqueId());
+                FlipManager.updateSQLPlayer(loser.getUniqueId());
+
+                FlipManager.addWon(winner.getUniqueId(), 1);
+                FlipManager.addLost(loser.getUniqueId(), 1);
             }, 20L * timer);
         }
     }

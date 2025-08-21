@@ -7,3 +7,7 @@ commands:
     description: CoinFlip main command
     usage: /cf <subcommand>
     aliases: [coinflip, cflip, coinf]
+  cfa:
+    description: CoinFlip main command
+    usage: /cfa <subcommand>
+    aliases: [coinflipadmin, coinflipa, cfadmin]

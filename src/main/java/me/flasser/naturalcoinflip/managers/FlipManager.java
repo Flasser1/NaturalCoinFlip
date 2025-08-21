@@ -1,7 +1,5 @@
 package me.flasser.naturalcoinflip.managers;
 
-import me.flasser.naturalcoinflip.utils.UUIDtoNameUtil;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,7 +12,7 @@ public class FlipManager {
             return;
         }
 
-        String query = "INSERT INTO Flips (UUID, Amount, Creation) VALUES (?, ?, ?, ?)";
+        String query = "INSERT INTO Flips (UUID, Amount, Creation) VALUES (?, ?, ?)";
 
         try (PreparedStatement ps = SQLManager.getConnection().prepareStatement(query)) {
             ps.setString(1, player.toString());
@@ -42,7 +40,7 @@ public class FlipManager {
             return;
         }
 
-        String query = "DELETE * FROM Flips WHERE UUID = ?";
+        String query = "DELETE FROM Flips WHERE UUID = ?";
         try (PreparedStatement ps = SQLManager.getConnection().prepareStatement(query)) {
             ps.setString(1, player.toString());
             ps.executeUpdate();
@@ -111,8 +109,8 @@ public class FlipManager {
                 if (rs.next()) {
                     PlayerInfo playerInfo = new PlayerInfo();
                     playerInfo.UUID = UUID.fromString(rs.getString("UUID"));
-                    playerInfo.wins = rs.getInt("wins");
-                    playerInfo.loses = rs.getInt("loses");
+                    playerInfo.wins = rs.getInt("Won");
+                    playerInfo.loses = rs.getInt("Lost");
                     return playerInfo;
                 }
             }
@@ -144,6 +142,84 @@ public class FlipManager {
 
         return flipUUIDs;
     }
+
+    public static void updateSQLPlayer(UUID UUID) {
+        if (!SQLManager.isConnected()) {
+            return;
+        }
+
+        String query = "INSERT OR IGNORE INTO Players (UUID, Won, Lost) VALUES (?, ?, ?)";
+        try (PreparedStatement ps = SQLManager.getConnection().prepareStatement(query)) {
+            ps.setString(1, String.valueOf(UUID));
+            ps.setInt(2, 0);
+            ps.setInt(3, 0);
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            System.err.println("Failed to insert/update Players: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    public static void addWon(UUID player, Integer amount) {
+        if (!SQLManager.isConnected()) {
+            return;
+        }
+
+        String query = "UPDATE Players SET Won = Won + "+amount+" WHERE UUID = ?";
+
+        try (PreparedStatement ps = SQLManager.getConnection().prepareStatement(query)) {
+            ps.setString(1, player.toString());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void addLost(UUID player, Integer amount) {
+        if (!SQLManager.isConnected()) {
+            return;
+        }
+
+        String query = "UPDATE Players SET Lost = Lost + "+amount+" WHERE UUID = ?";
+
+        try (PreparedStatement ps = SQLManager.getConnection().prepareStatement(query)) {
+            ps.setString(1, player.toString());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void removeWon(UUID player, Integer amount) {
+        if (!SQLManager.isConnected()) {
+            return;
+        }
+
+        String query = "UPDATE Players SET Won = Won - "+amount+" WHERE UUID = ?";
+
+        try (PreparedStatement ps = SQLManager.getConnection().prepareStatement(query)) {
+            ps.setString(1, player.toString());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void removeLost(UUID player, Integer amount) {
+        if (!SQLManager.isConnected()) {
+            return;
+        }
+
+        String query = "UPDATE Players SET Lost = Lost - "+amount+" WHERE UUID = ?";
+
+        try (PreparedStatement ps = SQLManager.getConnection().prepareStatement(query)) {
+            ps.setString(1, player.toString());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public static class FlipInfo {
         public UUID UUID;
