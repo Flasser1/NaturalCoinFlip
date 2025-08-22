@@ -13,8 +13,10 @@ public class CoinFlipAdminGroup extends SimpleCommandGroup{
         register(new RemWinSub("remwin", "del", "rem"));
         register(new StatsSub("stats", "del", "rem"));
         register(new VoidSub("void", "del", "rem"));
+        register(new ResetSub("reset", "reset"));
+        register(new ReloadSub("reload", "reload"));
 
-        setPermission("CoinFlipAdmin");
+        setPermission("coinflip");
     }
 }
 

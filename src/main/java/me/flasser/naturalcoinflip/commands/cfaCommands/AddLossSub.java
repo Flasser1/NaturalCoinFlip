@@ -1,13 +1,15 @@
 package me.flasser.naturalcoinflip.commands.cfaCommands;
 
+import me.flasser.naturalcoinflip.NaturalCoinFlip;
 import me.flasser.naturalcoinflip.managers.FileManager;
 import me.flasser.naturalcoinflip.utility.commandUtil.SubCommand;
 import me.flasser.naturalcoinflip.managers.FlipManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import static me.flasser.naturalcoinflip.utility.misc.FormatNumber.format;
 
 public class AddLossSub extends SubCommand {
 
@@ -18,12 +20,12 @@ public class AddLossSub extends SubCommand {
 
     @Override
     public String getDescription() {
-        return "Adds a specified amount of losses to a player.";
+        return "Add losses to a player.";
     }
 
     @Override
     public String getUsage() {
-        return "/cf addloss <player> <amount>";
+        return "/cfa addloss <player> <amount>";
     }
 
     @Override
@@ -33,13 +35,11 @@ public class AddLossSub extends SubCommand {
 
         if (args.length < 2) {
             player.sendMessage(FileManager.getMessage("player_not_specified"));
-            player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 1.0f, 1.0f);
             return;
         }
 
         if (args.length < 3) {
             player.sendMessage(FileManager.getMessage("addloss_not_specified"));
-            player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 1.0f, 1.0f);
             return;
         }
 
@@ -48,11 +48,23 @@ public class AddLossSub extends SubCommand {
             player.sendMessage(FileManager.getMessage("player_not_joined"));
             return;
         }
-        Integer amount = Integer.valueOf(args[2]);
 
-        FlipManager.addLost(target.getUniqueId(), amount);
-        player.sendMessage(FileManager.getMessage("addloss_added")
-                .replace("{amount}", amount.toString())
-                .replace("{player}", target.getName()));
+        Integer amount;
+        try {
+            amount = Integer.valueOf(args[2]);
+        } catch (NumberFormatException e) {
+            player.sendMessage(FileManager.getMessage("not_a_number"));
+            return;
+        }
+
+        Bukkit.getScheduler().runTaskAsynchronously(NaturalCoinFlip.getInstance(), () -> {
+            FlipManager.addLost(target.getUniqueId(), amount);
+
+            Bukkit.getScheduler().runTask(NaturalCoinFlip.getInstance(), () -> {
+                player.sendMessage(FileManager.getMessage("addloss_added")
+                        .replace("{amount}", format(amount))
+                        .replace("{player}", target.getName()));
+            });
+        });
     }
 }

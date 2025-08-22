@@ -4,9 +4,11 @@ import me.flasser.naturalcoinflip.NaturalCoinFlip;
 import me.flasser.naturalcoinflip.managers.FileManager;
 import me.flasser.naturalcoinflip.utility.commandUtil.SubCommand;
 import me.flasser.naturalcoinflip.managers.FlipManager;
-import org.bukkit.Sound;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.math.BigInteger;
 
 public class CreateSub extends SubCommand {
 
@@ -16,7 +18,7 @@ public class CreateSub extends SubCommand {
 
     @Override
     public String getDescription() {
-        return "Create a CoinFlip";
+        return "Create a coinflip.";
     }
 
     @Override
@@ -31,36 +33,47 @@ public class CreateSub extends SubCommand {
 
         if (FlipManager.hasFlip(player.getUniqueId())) {
             player.sendMessage(FileManager.getMessage("flip_already_up"));
-            player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 1.0f, 1.0f);
             return;
         }
 
         if (args.length < 2) {
             player.sendMessage(FileManager.getMessage("amount_not_specified"));
-            player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 1.0f, 1.0f);
             return;
         }
 
-        Integer amount = Integer.valueOf(args[1]);
+        Double amount;
+        try {
+            amount = Double.valueOf(args[1]);
+        } catch (NumberFormatException e) {
+            player.sendMessage(FileManager.getMessage("not_a_number"));
+            return;
+        }
 
-        if (amount < NaturalCoinFlip.getInstance().getConfig().getInt("minFlip")) {
+        if (!Double.isFinite(amount)) {
+            player.sendMessage(FileManager.getMessage("not_a_number"));
+            return;
+        }
+
+        if (amount.doubleValue() < NaturalCoinFlip.getInstance().getConfig().getDouble("minFlip")) {
             player.sendMessage(FileManager.getMessage("below_min")
                     .replace("{min}", ""+NaturalCoinFlip.getInstance().getConfig().getInt("minFlip")
             ));
-            player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 1.0f, 1.0f);
             return;
         }
 
-        if (!(NaturalCoinFlip.getEcon().getBalance(player) >= amount)) {
+        if (!(NaturalCoinFlip.getEcon().getBalance(player) >= (amount.doubleValue()))) {
             player.sendMessage(FileManager.getMessage("insufficient_funds_create"));
-            player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 1.0f, 1.0f);
             return;
         }
 
-        FlipManager.updateSQLPlayer(player.getUniqueId());
-        FlipManager.addFlip(player.getUniqueId(), amount);
-        NaturalCoinFlip.getEcon().withdrawPlayer(player, amount);
-        player.sendMessage(FileManager.getMessage("flip_created"));
+        Bukkit.getScheduler().runTaskAsynchronously(NaturalCoinFlip.getInstance(), () -> {
+            FlipManager.updateSQLPlayer(player.getUniqueId());
+            FlipManager.addFlip(player.getUniqueId(), amount);
 
+            Bukkit.getScheduler().runTask(NaturalCoinFlip.getInstance(), () -> {
+                NaturalCoinFlip.getEcon().withdrawPlayer(player, (amount.doubleValue()));
+                player.sendMessage(FileManager.getMessage("flip_created"));
+            });
+        });
     }
 }

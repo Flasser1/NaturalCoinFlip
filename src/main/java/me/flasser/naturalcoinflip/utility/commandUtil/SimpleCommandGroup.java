@@ -1,6 +1,6 @@
 package me.flasser.naturalcoinflip.utility.commandUtil;
 
-import org.bukkit.Bukkit;
+import me.flasser.naturalcoinflip.managers.FileManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -32,10 +32,11 @@ public class SimpleCommandGroup implements CommandExecutor {
         if (args.length == 0) {
             if (
                     permission != null &&
-                    !(sender.hasPermission("NaturalCoinFlip."+permission) ||
-                    sender.hasPermission("NaturalCoinFlip.*")))
+                    !(sender.hasPermission("natural."+permission+".*") ||
+                    sender.hasPermission("natural."+permission) ||
+                    sender.hasPermission("natural.*")))
             {
-                sender.sendMessage("§7Missing permission§8: §fNaturalCoinFlip." + permission);
+                sender.sendMessage(FileManager.getMessage("insufficient_permissions").replace("{permission}", "natural."+permission));
                 return true;
             }
             if (defaultAction != null) {
@@ -46,9 +47,9 @@ public class SimpleCommandGroup implements CommandExecutor {
             for (SubCommand sub : subCommands) {
                 if (
                         permission == null ||
-                        sender.hasPermission("NaturalCoinFlip."+permission+"."+sub.getPerm()) ||
-                        sender.hasPermission("NaturalCoinFlip."+permission+".*") ||
-                        sender.hasPermission("NaturalCoinFlip.*"))
+                        sender.hasPermission("natural."+permission+"."+sub.getPerm()) ||
+                        sender.hasPermission("natural."+permission+".*") ||
+                        sender.hasPermission("natural.*"))
                 {
                     sender.sendMessage("§8│ §f" + sub.getUsage() + " §8›› §7" + sub.getDescription());
                 }
@@ -59,15 +60,15 @@ public class SimpleCommandGroup implements CommandExecutor {
         for (SubCommand sub : subCommands) {
             if (sub.matches(args[0])) {
                 if (
-                        permission != null &&
-                        !(sender.hasPermission("NaturalCoinFlip."+permission+"."+sub.getPerm()) &&
-                        sender.hasPermission("NaturalCoinFlip."+permission+".*") &&
-                        sender.hasPermission("NaturalCoinFlip.*")))
+                        permission == null ||
+                        sender.hasPermission("natural."+permission+"."+sub.getPerm()) ||
+                        sender.hasPermission("natural."+permission+".*") ||
+                        sender.hasPermission("natural.*"))
                 {
-                    sender.sendMessage("§7Missing permission§8: §fNaturalCoinFlip."+permission+"."+sub.getPerm());
+                    sub.execute(sender, args);
                     return true;
                 } else {
-                    sub.execute(sender, args);
+                    sender.sendMessage(FileManager.getMessage("insufficient_permissions").replace("{permission}", "natural."+permission+"."+sub.getPerm()));
                     return true;
                 }
             }

@@ -1,5 +1,6 @@
 package me.flasser.naturalcoinflip.managers;
 
+import java.math.BigInteger;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -7,7 +8,7 @@ import java.util.*;
 
 public class FlipManager {
 
-    public static void addFlip(UUID player, Integer amount) {
+    public static void addFlip(UUID player, Double amount) {
         if (!SQLManager.isConnected()) {
             return;
         }
@@ -16,7 +17,7 @@ public class FlipManager {
 
         try (PreparedStatement ps = SQLManager.getConnection().prepareStatement(query)) {
             ps.setString(1, player.toString());
-            ps.setInt(2, amount);
+            ps.setDouble(2, amount.doubleValue());
             ps.setLong(3, System.currentTimeMillis());
 
             ps.executeUpdate();
@@ -26,7 +27,7 @@ public class FlipManager {
 
     }
 
-    public static void overrideFlip(UUID player, Integer amount) {
+    public static void overrideFlip(UUID player, Double amount) {
         if (!SQLManager.isConnected()) {
             return;
         }
@@ -83,7 +84,7 @@ public class FlipManager {
                 if (rs.next()) {
                     FlipInfo flip = new FlipInfo();
                     flip.UUID = UUID.fromString(rs.getString("UUID"));
-                    flip.amount = rs.getInt("Amount");
+                    flip.amount = rs.getDouble("Amount");
                     flip.creation = rs.getLong("creation");
                     return flip;
                 }
@@ -160,6 +161,20 @@ public class FlipManager {
         }
     }
 
+    public static void resetPlayer(UUID player) {
+        if (!SQLManager.isConnected()) {
+            return;
+        }
+
+        String query = "DELETE FROM Players WHERE UUID = ?";
+        try (PreparedStatement ps = SQLManager.getConnection().prepareStatement(query)) {
+            ps.setString(1, player.toString());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void addWon(UUID player, Integer amount) {
         if (!SQLManager.isConnected()) {
             return;
@@ -223,7 +238,7 @@ public class FlipManager {
 
     public static class FlipInfo {
         public UUID UUID;
-        public Integer amount;
+        public double amount;
         public Long creation;
     }
 

@@ -2,6 +2,7 @@ package me.flasser.naturalcoinflip;
 
 import me.flasser.naturalcoinflip.commands.cfCommands.CoinFlipGroup;
 import me.flasser.naturalcoinflip.commands.cfaCommands.CoinFlipAdminGroup;
+import me.flasser.naturalcoinflip.managers.CacheManager;
 import me.flasser.naturalcoinflip.managers.FileManager;
 import me.flasser.naturalcoinflip.managers.SQLManager;
 import me.flasser.naturalcoinflip.menues.cfMenu.CFMenuListener;
@@ -27,6 +28,7 @@ public final class NaturalCoinFlip extends JavaPlugin {
 
         saveDefaultConfig();
         FileManager.createMessages();
+        CacheManager.createCache();
 
         SQLManager.connect();
 
@@ -34,7 +36,7 @@ public final class NaturalCoinFlip extends JavaPlugin {
             SQLManager.setUp();
         }
 
-        int pluginId = 25176;
+        int pluginId = 26996;
         Metrics metrics = new Metrics(this, pluginId);
 
         getServer().getPluginManager().registerEvents(new CFMenuListener(), this);

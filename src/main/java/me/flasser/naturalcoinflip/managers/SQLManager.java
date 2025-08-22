@@ -2,14 +2,9 @@ package me.flasser.naturalcoinflip.managers;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 
 import java.io.File;
 import java.sql.*;
-import java.util.UUID;
 
 public class SQLManager {
     public static Connection con;
@@ -93,7 +88,7 @@ public class SQLManager {
         try {
             con.createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS Flips (" +
                     "UUID VARCHAR(36) PRIMARY KEY, " +
-                    "Amount INT NOT NULL, " +
+                    "Amount DOUBLE NOT NULL, " +
                     "Creation BIGINT NOT NULL" +
                     ");");
 

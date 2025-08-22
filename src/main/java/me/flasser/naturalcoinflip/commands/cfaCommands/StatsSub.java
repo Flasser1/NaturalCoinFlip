@@ -1,11 +1,11 @@
 package me.flasser.naturalcoinflip.commands.cfaCommands;
 
+import me.flasser.naturalcoinflip.NaturalCoinFlip;
 import me.flasser.naturalcoinflip.managers.FileManager;
 import me.flasser.naturalcoinflip.utility.commandUtil.SubCommand;
 import me.flasser.naturalcoinflip.managers.FlipManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -26,7 +26,7 @@ public class StatsSub extends SubCommand {
 
     @Override
     public String getUsage() {
-        return "/cf stats <player>";
+        return "/cfa stats <player>";
     }
 
     @Override
@@ -36,7 +36,6 @@ public class StatsSub extends SubCommand {
 
         if (args.length < 2) {
             player.sendMessage(FileManager.getMessage("player_not_specified"));
-            player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 1.0f, 1.0f);
             return;
         }
 
@@ -46,21 +45,25 @@ public class StatsSub extends SubCommand {
             return;
         }
 
-        FlipManager.PlayerInfo info = FlipManager.getPlayerInfo(target.getUniqueId());
+        Bukkit.getScheduler().runTaskAsynchronously(NaturalCoinFlip.getInstance(), () -> {
+            FlipManager.PlayerInfo info = FlipManager.getPlayerInfo(target.getUniqueId());
 
-        List<String> newestLoreList = new ArrayList<>();
-        String newLore;
-        for (String lore : FileManager.getListMessage("others_flip_stats")) {
-            newLore = lore
-                    .replace("{player}", Bukkit.getOfflinePlayer(info.UUID).getName())
-                    .replace("{won}", String.valueOf(info.wins))
-                    .replace("{lost}", String.valueOf(info.loses))
-                    .replace("{total}", String.valueOf(info.wins+info.loses));
+            Bukkit.getScheduler().runTask(NaturalCoinFlip.getInstance(), () -> {
+                List<String> newestLoreList = new ArrayList<>();
+                String newLore;
+                for (String lore : FileManager.getListMessage("others_flip_stats")) {
+                    newLore = lore
+                            .replace("{player}", Bukkit.getOfflinePlayer(info.UUID).getName())
+                            .replace("{won}", String.valueOf(info.wins))
+                            .replace("{lost}", String.valueOf(info.loses))
+                            .replace("{total}", String.valueOf(info.wins+info.loses));
 
-            newestLoreList.add(newLore);
-        }
-        String[] newestLore = newestLoreList.toArray(new String[0]);
-        player.sendMessage(newestLore);
+                    newestLoreList.add(newLore);
+                }
+                String[] newestLore = newestLoreList.toArray(new String[0]);
+                player.sendMessage(newestLore);
+            });
+        });
 
     }
 }

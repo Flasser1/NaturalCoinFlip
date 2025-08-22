@@ -14,6 +14,8 @@ insufficient_funds_create: "&7You do not have the sufficient funds to create thi
 flip_already_taken: "&7This coinflip is either already taken, or does not exist."
 click_own_flip: "&7You can't take your own coinflip."
 insufficient_funds_take: "&7You do not have sufficient funds for this coinflip."
+insufficient_permissions: "&7Missing permission&8: &f{permission}"
+not_a_number: "&7Please enter a valid number."
 
 #Timer messages
 countdown: "&7Finding a winner in &f{timer}s"
@@ -44,22 +46,24 @@ others_flip_info:
   - "&7Amount&8: &f{amount}"
 addwin_not_specified: "&7You need to specify the amount you want to add."
 addwin_added: "&7You have successfully added {amount} to {player}'s wins."
+others_reset: "&7You have successfully reset {player}'s stats."
 player_not_joined: "&7That player has not played before."
+reload_success: "&7You have successfully reloaded the configs"
 
 #Menus
 inventory_name: "&e&lCOINFLIP &8- &fPAGE "
 last_page: "&f&nLast Page"
 next_page: "&f&nNext Page"
-info_book_name: "&f&nINFO"
+info_book_name: "&f&l&nINFO"
 info_book_lore:
     - ""
     - "&7This is an overview of all"
-    - "&7active &fcoinflips &7on the server right now."
+    - "&7active &fcoinflips &7on the server."
     - ""
     - "&7Commands:"
-    - "&7 &8- &f/cf"
-    - "&7 &8- &f/cf create (amount)"
-    - "&7 &8- &f/cf delete"
+    - "&8│ &f/cf"
+    - "&8│ &f/cf create (amount)"
+    - "&8│ &f/cf delete"
     - ""
 stats_head_name: "&f&lSTATS"
 stats_head_lore:
@@ -77,4 +81,10 @@ flip_lore:
   - "&8│ &7Betted amount: &f{amount}"
   - ""
   - "&8➥ &7Click here to accept this coinflip."
+  - ""
+update_head_name: "&f&nUpdate Page"
+update_head_lore:
+  - ""
+  - "&7Click here to"
+  - "&7update the page."
   - ""

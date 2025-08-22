@@ -5,6 +5,7 @@ import me.flasser.naturalcoinflip.managers.FileManager;
 import me.flasser.naturalcoinflip.managers.FlipManager;
 import me.flasser.naturalcoinflip.utility.misc.ActionbarUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -13,10 +14,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import java.text.Format;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+
+import static me.flasser.naturalcoinflip.utility.misc.FormatNumber.format;
 
 public class CFMenuListener implements Listener {
 
@@ -42,16 +46,28 @@ public class CFMenuListener implements Listener {
             } else if (e.getRawSlot() == 45) {
                 CFMenu.openCFMenu(player, page-2);
             }
+            return;
         }
 
-        if (e.getCurrentItem().getType() == Material.STAINED_GLASS_PANE || e.getCurrentItem().getType() == Material.BOOK_AND_QUILL) {
+        if (
+                e.getCurrentItem().getType() == Material.STAINED_GLASS_PANE ||
+                e.getCurrentItem().getType() == Material.BOOK_AND_QUILL ||
+                e.getCurrentItem().getItemMeta().getDisplayName().contains(FileManager.getMessage("stats_head_name")))
+        {
             player.playSound(player.getLocation(), Sound.NOTE_BASS_GUITAR, 1.0f, 1.0f);
+            return;
         }
 
-        if (e.getCurrentItem().getType() == Material.SKULL_ITEM && !e.getClickedInventory().getName().contains(FileManager.getMessage("stats_head_name"))) {
+        if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase(ChatColor.stripColor(FileManager.getMessage("update_head_name")))) {
+            player.playSound(player.getLocation(), Sound.WOOD_CLICK, 1.0f, 1.0f);
+            CFMenu.openCFMenu(player, page-1);
+            return;
+        }
+
+        if (e.getCurrentItem().getType() == Material.SKULL_ITEM) {
             player.closeInventory();
             SkullMeta meta = (SkullMeta) e.getCurrentItem().getItemMeta();
-            UUID UUID = Bukkit.getOfflinePlayer(meta.getOwner()).getUniqueId();
+            UUID UUID = meta.getOwner() != null ? Bukkit.getOfflinePlayer(meta.getOwner()).getUniqueId() : null;
 
             if (!FlipManager.hasFlip(UUID)) {
                 player.sendMessage(FileManager.getMessage("flip_already_taken"));
@@ -65,7 +81,7 @@ public class CFMenuListener implements Listener {
                 return;
             }
 
-            Integer amount = FlipManager.getFlipInfo(UUID).amount;
+            Double amount = FlipManager.getFlipInfo(UUID).amount;
 
             if (NaturalCoinFlip.getEcon().getBalance(player) < amount) {
                 player.sendMessage(FileManager.getMessage("insufficient_funds_take"));
@@ -102,8 +118,8 @@ public class CFMenuListener implements Listener {
 
                 NaturalCoinFlip.getEcon().depositPlayer(winner, amount*2);
 
-                ActionbarUtil.sendActionBar(winner, FileManager.getMessage("win").replace("{amount}", String.valueOf(amount*2)));
-                ActionbarUtil.sendActionBar(loser, FileManager.getMessage("loss").replace("{amount}", String.valueOf(amount*2)));
+                ActionbarUtil.sendActionBar(winner, FileManager.getMessage("win").replace("{amount}", format(amount*2)));
+                ActionbarUtil.sendActionBar(loser, FileManager.getMessage("loss").replace("{amount}", format(amount*2)));
 
                 winner.playSound(winner.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
                 loser.playSound(loser.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);

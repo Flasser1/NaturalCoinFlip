@@ -9,23 +9,21 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import static me.flasser.naturalcoinflip.utility.misc.FormatNumber.format;
+public class ResetSub extends SubCommand {
 
-public class AddWinSub extends SubCommand {
-
-    public AddWinSub(String name, String... aliases) {
-        super("addwin", "addwin");
-        setPermission("addwin");
+    public ResetSub(String name, String... aliases) {
+        super("reset", "reset");
+        setPermission("reset");
     }
 
     @Override
     public String getDescription() {
-        return "Add wins to a player.";
+        return "Reset a player's stats.";
     }
 
     @Override
     public String getUsage() {
-        return "/cfa addwin <player> <amount>";
+        return "/cfa reset <player>";
     }
 
     @Override
@@ -38,31 +36,17 @@ public class AddWinSub extends SubCommand {
             return;
         }
 
-        if (args.length < 3) {
-            player.sendMessage(FileManager.getMessage("addwin_not_specified"));
-            return;
-        }
-
         OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
         if (!target.hasPlayedBefore()) {
             player.sendMessage(FileManager.getMessage("player_not_joined"));
             return;
         }
 
-        Integer amount;
-        try {
-            amount = Integer.valueOf(args[2]);
-        } catch (NumberFormatException e) {
-            player.sendMessage(FileManager.getMessage("not_a_number"));
-            return;
-        }
-
         Bukkit.getScheduler().runTaskAsynchronously(NaturalCoinFlip.getInstance(), () -> {
-            FlipManager.addWon(target.getUniqueId(), amount);
+            FlipManager.resetPlayer(target.getUniqueId());
 
             Bukkit.getScheduler().runTask(NaturalCoinFlip.getInstance(), () -> {
-                player.sendMessage(FileManager.getMessage("addwin_added")
-                        .replace("{amount}", format(amount))
+                player.sendMessage(FileManager.getMessage("others_reset")
                         .replace("{player}", target.getName()));
             });
         });
