@@ -16,8 +16,8 @@ public class DeleteSub extends SubCommand {
     public DeleteSub(String name, String... aliases) {
         super("delete", "del", "rem");
         setPermission("delete");
-        setCompletion(1, "subcommand");
-        setCompletion(2, "player");
+        setCompletion(0, "subcommand");
+        setCompletion(1, "player");
     }
 
     @Override

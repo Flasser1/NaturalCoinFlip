@@ -15,7 +15,7 @@ import static me.flasser.naturalcoinflip.utility.misc.FormatNumber.formatInt;
 public class RemWinSub extends SubCommand {
 
     public RemWinSub(String name, String... aliases) {
-        super("remwin", "remwin");
+        super("remwin", "remwon");
         setPermission("remwin");
         setCompletion(0, "subcommand");
         setCompletion(1, "player");

@@ -15,7 +15,7 @@ import static me.flasser.naturalcoinflip.utility.misc.FormatNumber.formatInt;
 public class AddLossSub extends SubCommand {
 
     public AddLossSub(String name, String... aliases) {
-        super("addloss", "addloss");
+        super("addloss", "addlost");
         setPermission("addloss");
         setCompletion(0, "subcommand");
         setCompletion(1, "player");

@@ -15,7 +15,7 @@ import static me.flasser.naturalcoinflip.utility.misc.FormatNumber.formatInt;
 public class RemLossSub extends SubCommand {
 
     public RemLossSub(String name, String... aliases) {
-        super("remloss");
+        super("remloss", "remlost");
         setPermission("remloss");
         setCompletion(0, "subcommand");
         setCompletion(1, "player");

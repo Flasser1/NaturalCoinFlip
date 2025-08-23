@@ -9,7 +9,7 @@ import org.bukkit.command.CommandSender;
 public class ReloadSub extends SubCommand {
 
     public ReloadSub(String name, String... aliases) {
-        super("reload");
+        super("reload", "load");
         setPermission("reload");
         setCompletion(0, "subcommand");
     }

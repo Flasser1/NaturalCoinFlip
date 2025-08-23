@@ -15,7 +15,7 @@ import static me.flasser.naturalcoinflip.utility.misc.FormatNumber.formatInt;
 public class AddWinSub extends SubCommand {
 
     public AddWinSub(String name, String... aliases) {
-        super("addwin", "addwin");
+        super("addwin", "addwon");
         setPermission("addwin");
         setCompletion(0, "subcommand");
         setCompletion(1, "player");

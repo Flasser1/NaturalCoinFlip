@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 public class ResetSub extends SubCommand {
 
     public ResetSub(String name, String... aliases) {
-        super("reset", "reset");
+        super("reset");
         setPermission("reset");
         setCompletion(0, "subcommand");
         setCompletion(1, "player");
