@@ -18,16 +18,19 @@ import static me.flasser.naturalcoinflip.managers.CacheManager.*;
 import static me.flasser.naturalcoinflip.utility.misc.FormatNumber.format;
 
 public class CFMenu {
-    public static void openCFMenu(Player player, Integer page) {
+    public static void openCFMenu(Player player, int page) {
         Bukkit.getScheduler().runTaskAsynchronously(NaturalCoinFlip.getInstance(), () -> {
             FlipManager.PlayerInfo info = FlipManager.getPlayerInfo(player.getUniqueId());
             int wins = info != null && info.wins != null ? info.wins : 0;
             int loses = info != null && info.loses != null ? info.loses : 0;
+            int total = info != null ? wins+loses : 0;
+            double ratio = info != null && total != 0 ? 100.0*wins/total : 0;
 
             List<UUID> flips = FlipManager.getAllFlips();
             Map<UUID, Double> flipAmounts = new HashMap<>();
+            assert flips != null;
             for (UUID uuid : flips) {
-                flipAmounts.put(uuid, FlipManager.getFlipInfo(uuid).amount);
+                flipAmounts.put(uuid, Objects.requireNonNull(FlipManager.getFlipInfo(uuid)).amount);
             }
 
             int flipsPerPage = 36;
@@ -60,7 +63,8 @@ public class CFMenu {
                     newLore = lore
                             .replace("{wins}", String.valueOf(wins))
                             .replace("{loses}", String.valueOf(loses))
-                            .replace("{total}", String.valueOf(wins + loses));
+                            .replace("{ratio}", STATS_DECIMAL.format(ratio)+"%")
+                            .replace("{total}", String.valueOf(total));
 
                     newestLoreList.add(newLore);
                 }
@@ -79,7 +83,7 @@ public class CFMenu {
                 }
                 menu.setItem(4, infoHead);
 
-                Integer slot = 8;
+                int slot = 8;
                 for (int i = startIndex; i < endIndex; i++) {
                     UUID flipUUID = flips.get(i);
                     OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(flipUUID);

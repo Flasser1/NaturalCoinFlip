@@ -10,12 +10,16 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import static me.flasser.naturalcoinflip.utility.misc.FormatNumber.format;
+import static me.flasser.naturalcoinflip.utility.misc.FormatNumber.formatInt;
 
 public class RemWinSub extends SubCommand {
 
     public RemWinSub(String name, String... aliases) {
         super("remwin", "remwin");
         setPermission("remwin");
+        setCompletion(0, "subcommand");
+        setCompletion(1, "player");
+        setCompletion(2, "integer");
     }
 
     @Override
@@ -49,10 +53,8 @@ public class RemWinSub extends SubCommand {
             return;
         }
 
-        Integer amount;
-        try {
-            amount = Integer.valueOf(args[2]);
-        } catch (NumberFormatException e) {
+        Integer amount = formatInt(args[2]);
+        if (amount == null) {
             player.sendMessage(FileManager.getMessage("not_a_number"));
             return;
         }

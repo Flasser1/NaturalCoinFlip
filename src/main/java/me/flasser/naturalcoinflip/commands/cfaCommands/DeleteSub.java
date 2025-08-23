@@ -9,11 +9,15 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Objects;
+
 public class DeleteSub extends SubCommand {
 
     public DeleteSub(String name, String... aliases) {
         super("delete", "del", "rem");
         setPermission("delete");
+        setCompletion(1, "subcommand");
+        setCompletion(2, "player");
     }
 
     @Override
@@ -47,7 +51,7 @@ public class DeleteSub extends SubCommand {
             return;
         }
 
-        NaturalCoinFlip.getEcon().depositPlayer(target, FlipManager.getFlipInfo(target.getUniqueId()).amount);
+        NaturalCoinFlip.getEcon().depositPlayer(target, Objects.requireNonNull(FlipManager.getFlipInfo(target.getUniqueId())).amount);
         Bukkit.getScheduler().runTaskAsynchronously(NaturalCoinFlip.getInstance(), () -> {
             FlipManager.removeFlip(target.getUniqueId());
 

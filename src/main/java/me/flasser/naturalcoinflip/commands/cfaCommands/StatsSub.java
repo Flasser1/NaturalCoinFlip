@@ -12,11 +12,15 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
+import static me.flasser.naturalcoinflip.managers.CacheManager.STATS_DECIMAL;
+
 public class StatsSub extends SubCommand {
 
     public StatsSub(String name, String... aliases) {
         super("stats", "stats");
         setPermission("stats");
+        setCompletion(0, "subcommand");
+        setCompletion(1, "player");
     }
 
     @Override
@@ -47,16 +51,22 @@ public class StatsSub extends SubCommand {
 
         Bukkit.getScheduler().runTaskAsynchronously(NaturalCoinFlip.getInstance(), () -> {
             FlipManager.PlayerInfo info = FlipManager.getPlayerInfo(target.getUniqueId());
+            int wins = info != null && info.wins != null ? info.wins : 0;
+            int loses = info != null && info.loses != null ? info.loses : 0;
+            int total = info != null ? wins+loses : 0;
+            double ratio = info != null && total != 0 ? 100.0*wins/total : 0;
 
             Bukkit.getScheduler().runTask(NaturalCoinFlip.getInstance(), () -> {
                 List<String> newestLoreList = new ArrayList<>();
                 String newLore;
                 for (String lore : FileManager.getListMessage("others_flip_stats")) {
+                    assert info != null;
                     newLore = lore
                             .replace("{player}", Bukkit.getOfflinePlayer(info.UUID).getName())
                             .replace("{won}", String.valueOf(info.wins))
                             .replace("{lost}", String.valueOf(info.loses))
-                            .replace("{total}", String.valueOf(info.wins+info.loses));
+                            .replace("{ratio}", STATS_DECIMAL.format(ratio)+"%")
+                            .replace("{total}", String.valueOf(total));
 
                     newestLoreList.add(newLore);
                 }

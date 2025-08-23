@@ -14,11 +14,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.text.Format;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 import static me.flasser.naturalcoinflip.utility.misc.FormatNumber.format;
 
@@ -36,7 +32,7 @@ public class CFMenuListener implements Listener {
             return;
         }
 
-        Integer page = Integer.valueOf(e.getClickedInventory().getName().replace(FileManager.getMessage("inventory_name"), ""));
+        int page = Integer.parseInt(e.getClickedInventory().getName().replace(FileManager.getMessage("inventory_name"), ""));
 
         e.setCancelled(true);
         if (e.getCurrentItem().getType() == Material.ARROW) {
@@ -81,7 +77,7 @@ public class CFMenuListener implements Listener {
                 return;
             }
 
-            Double amount = FlipManager.getFlipInfo(UUID).amount;
+            double amount = Objects.requireNonNull(FlipManager.getFlipInfo(UUID)).amount;
 
             if (NaturalCoinFlip.getEcon().getBalance(player) < amount) {
                 player.sendMessage(FileManager.getMessage("insufficient_funds_take"));
@@ -91,7 +87,7 @@ public class CFMenuListener implements Listener {
 
             FlipManager.removeFlip(UUID);
             NaturalCoinFlip.getEcon().withdrawPlayer(player, amount);
-            Integer timer = NaturalCoinFlip.getInstance().getConfig().getInt("time");
+            int timer = NaturalCoinFlip.getInstance().getConfig().getInt("time");
             for (int i = 0; i < timer; i++) {
                 int secondsLeft = timer - i;
 

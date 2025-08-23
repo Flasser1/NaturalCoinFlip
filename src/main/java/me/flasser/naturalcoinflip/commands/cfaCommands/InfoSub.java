@@ -20,6 +20,8 @@ public class InfoSub extends SubCommand {
     public InfoSub(String name, String... aliases) {
         super("info");
         setPermission("info");
+        setCompletion(0, "subcommand");
+        setCompletion(1, "player");
     }
 
     @Override
@@ -54,6 +56,7 @@ public class InfoSub extends SubCommand {
                 List<String> newestLoreList = new ArrayList<>();
                 String newLore;
                 for (String lore : FileManager.getListMessage("others_flip_info")) {
+                    assert info != null;
                     newLore = lore
                             .replace("{player}", Bukkit.getOfflinePlayer(info.UUID).getName())
                             .replace("{date}", String.valueOf(new Date(info.creation)))

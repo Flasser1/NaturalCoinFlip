@@ -11,6 +11,7 @@ public class ReloadSub extends SubCommand {
     public ReloadSub(String name, String... aliases) {
         super("reload");
         setPermission("reload");
+        setCompletion(0, "subcommand");
     }
 
     @Override

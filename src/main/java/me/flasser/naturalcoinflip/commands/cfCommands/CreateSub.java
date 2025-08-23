@@ -8,12 +8,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.math.BigInteger;
+import static me.flasser.naturalcoinflip.utility.misc.FormatNumber.formatDou;
 
 public class CreateSub extends SubCommand {
 
     public CreateSub(String name, String... aliases) {
         super("create",  "make", "put");
+        setCompletion(0, "subcommand");
+        setCompletion(1, "integer");
     }
 
     @Override
@@ -41,27 +43,20 @@ public class CreateSub extends SubCommand {
             return;
         }
 
-        Double amount;
-        try {
-            amount = Double.valueOf(args[1]);
-        } catch (NumberFormatException e) {
+        Double amount = formatDou(args[1]);
+        if (amount == null) {
             player.sendMessage(FileManager.getMessage("not_a_number"));
             return;
         }
 
-        if (!Double.isFinite(amount)) {
-            player.sendMessage(FileManager.getMessage("not_a_number"));
-            return;
-        }
-
-        if (amount.doubleValue() < NaturalCoinFlip.getInstance().getConfig().getDouble("minFlip")) {
+        if (amount < NaturalCoinFlip.getInstance().getConfig().getDouble("minFlip")) {
             player.sendMessage(FileManager.getMessage("below_min")
                     .replace("{min}", ""+NaturalCoinFlip.getInstance().getConfig().getInt("minFlip")
             ));
             return;
         }
 
-        if (!(NaturalCoinFlip.getEcon().getBalance(player) >= (amount.doubleValue()))) {
+        if (!(NaturalCoinFlip.getEcon().getBalance(player) >= (amount))) {
             player.sendMessage(FileManager.getMessage("insufficient_funds_create"));
             return;
         }
@@ -71,7 +66,7 @@ public class CreateSub extends SubCommand {
             FlipManager.addFlip(player.getUniqueId(), amount);
 
             Bukkit.getScheduler().runTask(NaturalCoinFlip.getInstance(), () -> {
-                NaturalCoinFlip.getEcon().withdrawPlayer(player, (amount.doubleValue()));
+                NaturalCoinFlip.getEcon().withdrawPlayer(player, amount);
                 player.sendMessage(FileManager.getMessage("flip_created"));
             });
         });

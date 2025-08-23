@@ -1,6 +1,5 @@
 package me.flasser.naturalcoinflip.managers;
 
-import java.math.BigInteger;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,7 +7,7 @@ import java.util.*;
 
 public class FlipManager {
 
-    public static void addFlip(UUID player, Double amount) {
+    public static void addFlip(UUID player, double amount) {
         if (!SQLManager.isConnected()) {
             return;
         }
@@ -17,7 +16,7 @@ public class FlipManager {
 
         try (PreparedStatement ps = SQLManager.getConnection().prepareStatement(query)) {
             ps.setString(1, player.toString());
-            ps.setDouble(2, amount.doubleValue());
+            ps.setDouble(2, amount);
             ps.setLong(3, System.currentTimeMillis());
 
             ps.executeUpdate();
@@ -27,7 +26,7 @@ public class FlipManager {
 
     }
 
-    public static void overrideFlip(UUID player, Double amount) {
+    public static void overrideFlip(UUID player, double amount) {
         if (!SQLManager.isConnected()) {
             return;
         }
@@ -175,7 +174,7 @@ public class FlipManager {
         }
     }
 
-    public static void addWon(UUID player, Integer amount) {
+    public static void addWon(UUID player, int amount) {
         if (!SQLManager.isConnected()) {
             return;
         }
@@ -190,7 +189,7 @@ public class FlipManager {
         }
     }
 
-    public static void addLost(UUID player, Integer amount) {
+    public static void addLost(UUID player, int amount) {
         if (!SQLManager.isConnected()) {
             return;
         }
@@ -205,7 +204,7 @@ public class FlipManager {
         }
     }
 
-    public static void removeWon(UUID player, Integer amount) {
+    public static void removeWon(UUID player, int amount) {
         if (!SQLManager.isConnected()) {
             return;
         }
@@ -220,7 +219,7 @@ public class FlipManager {
         }
     }
 
-    public static void removeLost(UUID player, Integer amount) {
+    public static void removeLost(UUID player, int amount) {
         if (!SQLManager.isConnected()) {
             return;
         }
@@ -239,7 +238,7 @@ public class FlipManager {
     public static class FlipInfo {
         public UUID UUID;
         public double amount;
-        public Long creation;
+        public long creation;
     }
 
     public static class PlayerInfo {

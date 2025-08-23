@@ -14,6 +14,8 @@ public class ResetSub extends SubCommand {
     public ResetSub(String name, String... aliases) {
         super("reset", "reset");
         setPermission("reset");
+        setCompletion(0, "subcommand");
+        setCompletion(1, "player");
     }
 
     @Override

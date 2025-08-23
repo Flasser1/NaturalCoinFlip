@@ -12,4 +12,3 @@ public class ActionbarUtil {
         ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
     }
 }
-

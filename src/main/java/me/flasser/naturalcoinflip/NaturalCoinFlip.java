@@ -42,8 +42,9 @@ public final class NaturalCoinFlip extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new CFMenuListener(), this);
 
         getCommand("cf").setExecutor(new CoinFlipGroup());
+        getCommand("cf").setTabCompleter(new CoinFlipGroup());
         getCommand("cfa").setExecutor(new CoinFlipAdminGroup());
-
+        getCommand("cfa").setTabCompleter(new CoinFlipAdminGroup());
     }
 
     @Override

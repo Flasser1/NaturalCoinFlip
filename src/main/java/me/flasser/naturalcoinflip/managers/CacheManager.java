@@ -5,6 +5,8 @@ import me.flasser.naturalcoinflip.utility.itemUtil.NamedItem;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+import java.text.DecimalFormat;
+
 public class CacheManager {
     public static ItemStack YELLOW_PANE;
     public static ItemStack WHITE_PANE;
@@ -12,6 +14,7 @@ public class CacheManager {
     public static ItemStack FORWARD_ARROW;
     public static ItemStack INFO_BOOK;
     public static ItemStack UPDATE_HEAD;
+    public static DecimalFormat STATS_DECIMAL;
 
     public static void createCache() {
         YELLOW_PANE = new NamedItem(
@@ -41,5 +44,7 @@ public class CacheManager {
                 FileManager.getMessage("update_head_name"),
                 FileManager.getListMessage("update_head_lore")
         ).get();
+
+        STATS_DECIMAL = new DecimalFormat("#.##");
     }
 }

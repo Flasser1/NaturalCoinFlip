@@ -19,5 +19,3 @@ public class CoinFlipAdminGroup extends SimpleCommandGroup{
         setPermission("coinflip");
     }
 }
-
-//Sub commands, delete, void, stats, info, addwin, addloss, remwin, remloss, reset

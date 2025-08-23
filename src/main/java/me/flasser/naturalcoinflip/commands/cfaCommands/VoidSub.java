@@ -14,6 +14,8 @@ public class VoidSub extends SubCommand {
     public VoidSub(String name, String... aliases) {
         super("void", "void");
         setPermission("void");
+        setCompletion(0, "subcommand");
+        setCompletion(1, "player");
     }
 
     @Override
