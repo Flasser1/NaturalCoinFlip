@@ -112,7 +112,7 @@ public class CFMenuListener implements Listener {
                 players.remove(winner);
                 Player loser = players.get(0);
 
-                NaturalCoinFlip.getEcon().depositPlayer(winner, amount*2);
+                NaturalCoinFlip.getEcon().depositPlayer(winner, amount*2*(1-NaturalCoinFlip.getInstance().getConfig().getLong("tax")));
 
                 ActionbarUtil.sendActionBar(winner, FileManager.getMessage("win").replace("{amount}", format(amount*2)));
                 ActionbarUtil.sendActionBar(loser, FileManager.getMessage("loss").replace("{amount}", format(amount*2)));
