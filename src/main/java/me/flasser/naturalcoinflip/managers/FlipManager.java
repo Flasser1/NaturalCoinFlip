@@ -1,20 +1,27 @@
 package me.flasser.naturalcoinflip.managers;
 
+import eu.okaeri.commands.bukkit.annotation.Async;
+import eu.okaeri.injector.annotation.Inject;
+import eu.okaeri.platform.core.annotation.Component;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-
+@Component
+@Async
 public class FlipManager {
+    @Inject
+    private SQLManager sqlManager;
 
-    public static void addFlip(UUID player, double amount) {
-        if (!SQLManager.isConnected()) {
+    public void addFlip(UUID player, double amount) {
+        if (!sqlManager.isConnected()) {
             return;
         }
 
         String query = "INSERT INTO Flips (UUID, Amount, Creation) VALUES (?, ?, ?)";
 
-        try (PreparedStatement ps = SQLManager.getConnection().prepareStatement(query)) {
+        try (PreparedStatement ps = sqlManager.getConnection().prepareStatement(query)) {
             ps.setString(1, player.toString());
             ps.setDouble(2, amount);
             ps.setLong(3, System.currentTimeMillis());
@@ -23,11 +30,10 @@ public class FlipManager {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
     }
 
-    public static void overrideFlip(UUID player, double amount) {
-        if (!SQLManager.isConnected()) {
+    public void overrideFlip(UUID player, double amount) {
+        if (!sqlManager.isConnected()) {
             return;
         }
 
@@ -35,13 +41,13 @@ public class FlipManager {
         addFlip(player, amount);
     }
 
-    public static void removeFlip(UUID player) {
-        if (!SQLManager.isConnected()) {
+    public void removeFlip(UUID player) {
+        if (!sqlManager.isConnected()) {
             return;
         }
 
         String query = "DELETE FROM Flips WHERE UUID = ?";
-        try (PreparedStatement ps = SQLManager.getConnection().prepareStatement(query)) {
+        try (PreparedStatement ps = sqlManager.getConnection().prepareStatement(query)) {
             ps.setString(1, player.toString());
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -49,14 +55,14 @@ public class FlipManager {
         }
     }
 
-    public static boolean hasFlip(UUID player) {
-        if (!SQLManager.isConnected()) {
+    public boolean hasFlip(UUID player) {
+        if (!sqlManager.isConnected()) {
             return false;
         }
 
         String query = "SELECT * FROM Flips WHERE UUID = ?";
 
-        try (PreparedStatement ps = SQLManager.getConnection().prepareStatement(query)) {
+        try (PreparedStatement ps = sqlManager.getConnection().prepareStatement(query)) {
             ps.setString(1, player.toString());
 
             try (ResultSet rs = ps.executeQuery()) {
@@ -69,14 +75,14 @@ public class FlipManager {
         return false;
     }
 
-    public static FlipInfo getFlipInfo(UUID player) {
-        if (!SQLManager.isConnected()) {
+    public FlipInfo getFlipInfo(UUID player) {
+        if (!sqlManager.isConnected()) {
             return null;
         }
 
         String query = "SELECT * FROM Flips WHERE UUID = ?";
 
-        try (PreparedStatement ps = SQLManager.getConnection().prepareStatement(query)) {
+        try (PreparedStatement ps = sqlManager.getConnection().prepareStatement(query)) {
             ps.setString(1, player.toString());
 
             try (ResultSet rs = ps.executeQuery()) {
@@ -95,14 +101,14 @@ public class FlipManager {
         return null;
     }
 
-    public static PlayerInfo getPlayerInfo(UUID player) {
-        if (!SQLManager.isConnected()) {
+    public PlayerInfo getPlayerInfo(UUID player) {
+        if (!sqlManager.isConnected()) {
             return null;
         }
 
         String query = "SELECT * FROM Players WHERE UUID = ?";
 
-        try (PreparedStatement ps = SQLManager.getConnection().prepareStatement(query)) {
+        try (PreparedStatement ps = sqlManager.getConnection().prepareStatement(query)) {
             ps.setString(1, player.toString());
 
             try (ResultSet rs = ps.executeQuery()) {
@@ -121,15 +127,15 @@ public class FlipManager {
         return null;
     }
 
-    public static List<UUID> getAllFlips() {
-        if (!SQLManager.isConnected()) {
+    public List<UUID> getAllFlips() {
+        if (!sqlManager.isConnected()) {
             return null;
         }
 
         String query = "SELECT UUID FROM Flips";
         List<UUID> flipUUIDs = new ArrayList<>();
 
-        try (PreparedStatement ps = SQLManager.getConnection().prepareStatement(query);
+        try (PreparedStatement ps = sqlManager.getConnection().prepareStatement(query);
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
@@ -143,13 +149,13 @@ public class FlipManager {
         return flipUUIDs;
     }
 
-    public static void updateSQLPlayer(UUID UUID) {
-        if (!SQLManager.isConnected()) {
+    public void updateSQLPlayer(UUID UUID) {
+        if (!sqlManager.isConnected()) {
             return;
         }
 
         String query = "INSERT OR IGNORE INTO Players (UUID, Won, Lost) VALUES (?, ?, ?)";
-        try (PreparedStatement ps = SQLManager.getConnection().prepareStatement(query)) {
+        try (PreparedStatement ps = sqlManager.getConnection().prepareStatement(query)) {
             ps.setString(1, String.valueOf(UUID));
             ps.setInt(2, 0);
             ps.setInt(3, 0);
@@ -160,13 +166,13 @@ public class FlipManager {
         }
     }
 
-    public static void resetPlayer(UUID player) {
-        if (!SQLManager.isConnected()) {
+    public void resetPlayer(UUID player) {
+        if (!sqlManager.isConnected()) {
             return;
         }
 
         String query = "DELETE FROM Players WHERE UUID = ?";
-        try (PreparedStatement ps = SQLManager.getConnection().prepareStatement(query)) {
+        try (PreparedStatement ps = sqlManager.getConnection().prepareStatement(query)) {
             ps.setString(1, player.toString());
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -174,14 +180,14 @@ public class FlipManager {
         }
     }
 
-    public static void addWon(UUID player, int amount) {
-        if (!SQLManager.isConnected()) {
+    public void addWon(UUID player, int amount) {
+        if (!sqlManager.isConnected()) {
             return;
         }
 
         String query = "UPDATE Players SET Won = Won + "+amount+" WHERE UUID = ?";
 
-        try (PreparedStatement ps = SQLManager.getConnection().prepareStatement(query)) {
+        try (PreparedStatement ps = sqlManager.getConnection().prepareStatement(query)) {
             ps.setString(1, player.toString());
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -189,14 +195,14 @@ public class FlipManager {
         }
     }
 
-    public static void addLost(UUID player, int amount) {
-        if (!SQLManager.isConnected()) {
+    public void addLost(UUID player, int amount) {
+        if (!sqlManager.isConnected()) {
             return;
         }
 
         String query = "UPDATE Players SET Lost = Lost + "+amount+" WHERE UUID = ?";
 
-        try (PreparedStatement ps = SQLManager.getConnection().prepareStatement(query)) {
+        try (PreparedStatement ps = sqlManager.getConnection().prepareStatement(query)) {
             ps.setString(1, player.toString());
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -204,14 +210,14 @@ public class FlipManager {
         }
     }
 
-    public static void removeWon(UUID player, int amount) {
-        if (!SQLManager.isConnected()) {
+    public void removeWon(UUID player, int amount) {
+        if (!sqlManager.isConnected()) {
             return;
         }
 
         String query = "UPDATE Players SET Won = Won - "+amount+" WHERE UUID = ?";
 
-        try (PreparedStatement ps = SQLManager.getConnection().prepareStatement(query)) {
+        try (PreparedStatement ps = sqlManager.getConnection().prepareStatement(query)) {
             ps.setString(1, player.toString());
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -219,14 +225,14 @@ public class FlipManager {
         }
     }
 
-    public static void removeLost(UUID player, int amount) {
-        if (!SQLManager.isConnected()) {
+    public void removeLost(UUID player, int amount) {
+        if (!sqlManager.isConnected()) {
             return;
         }
 
         String query = "UPDATE Players SET Lost = Lost - "+amount+" WHERE UUID = ?";
 
-        try (PreparedStatement ps = SQLManager.getConnection().prepareStatement(query)) {
+        try (PreparedStatement ps = sqlManager.getConnection().prepareStatement(query)) {
             ps.setString(1, player.toString());
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -235,13 +241,13 @@ public class FlipManager {
     }
 
 
-    public static class FlipInfo {
+    public class FlipInfo {
         public UUID UUID;
         public double amount;
         public long creation;
     }
 
-    public static class PlayerInfo {
+    public class PlayerInfo {
         public UUID UUID;
         public Integer wins;
         public Integer loses;

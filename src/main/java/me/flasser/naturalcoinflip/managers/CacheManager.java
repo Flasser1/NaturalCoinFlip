@@ -1,5 +1,8 @@
 package me.flasser.naturalcoinflip.managers;
 
+import eu.okaeri.commands.bukkit.annotation.Async;
+import eu.okaeri.injector.annotation.Inject;
+import eu.okaeri.platform.core.annotation.Component;
 import me.flasser.naturalcoinflip.NaturalCoinFlip;
 import me.flasser.naturalcoinflip.utility.itemUtil.NamedItem;
 import org.bukkit.Material;
@@ -7,16 +10,28 @@ import org.bukkit.inventory.ItemStack;
 
 import java.text.DecimalFormat;
 
+@Component
 public class CacheManager {
-    public static ItemStack YELLOW_PANE;
-    public static ItemStack WHITE_PANE;
-    public static ItemStack BACK_ARROW;
-    public static ItemStack FORWARD_ARROW;
-    public static ItemStack INFO_BOOK;
-    public static ItemStack UPDATE_HEAD;
-    public static DecimalFormat STATS_DECIMAL;
 
-    public static void createCache() {
+    private final NaturalCoinFlip plugin;
+
+    @Inject
+    public CacheManager(NaturalCoinFlip plugin) {
+        this.plugin = plugin;
+    }
+
+    @Inject
+    private FileManager fileManager;
+
+    private ItemStack YELLOW_PANE;
+    private ItemStack WHITE_PANE;
+    private ItemStack BACK_ARROW;
+    private ItemStack FORWARD_ARROW;
+    private ItemStack INFO_BOOK;
+    private ItemStack UPDATE_HEAD;
+    private DecimalFormat STATS_DECIMAL;
+
+    public void createCache() {
         YELLOW_PANE = new NamedItem(
                 new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte) 4), "§7"
         ).get();
@@ -26,25 +41,53 @@ public class CacheManager {
         ).get();
 
         BACK_ARROW = new NamedItem(
-                Material.ARROW, 1, FileManager.getMessage("last_page")
+                Material.ARROW, 1, fileManager.getMessage("last_page")
         ).get();
 
         FORWARD_ARROW = new NamedItem(
-                Material.ARROW, 1, FileManager.getMessage("next_page")
+                Material.ARROW, 1, fileManager.getMessage("next_page")
         ).get();
 
         INFO_BOOK = new NamedItem(
                 Material.BOOK_AND_QUILL, 1,
-                FileManager.getMessage("info_book_name"),
-                FileManager.getListMessage("info_book_lore")
+                fileManager.getMessage("info_book_name"),
+                fileManager.getListMessage("info_book_lore")
         ).get();
 
         UPDATE_HEAD = new NamedItem(Material.SKULL_ITEM, 1, (byte) 3,
-                NaturalCoinFlip.getInstance().getConfig().getString("updateValue"),
-                FileManager.getMessage("update_head_name"),
-                FileManager.getListMessage("update_head_lore")
+                plugin.getConfig().getString("updateValue"),
+                fileManager.getMessage("update_head_name"),
+                fileManager.getListMessage("update_head_lore")
         ).get();
 
         STATS_DECIMAL = new DecimalFormat("#.##");
+    }
+
+    public ItemStack getYellowPane() {
+        return YELLOW_PANE.clone();
+    }
+
+    public ItemStack getWhitePane() {
+        return WHITE_PANE.clone();
+    }
+
+    public ItemStack getBackArrow() {
+        return BACK_ARROW.clone();
+    }
+
+    public ItemStack getForwardArrow() {
+        return FORWARD_ARROW.clone();
+    }
+
+    public ItemStack getInfoBook() {
+        return INFO_BOOK.clone();
+    }
+
+    public ItemStack getUpdateHead() {
+        return UPDATE_HEAD.clone();
+    }
+
+    public DecimalFormat getStatsDecimal() {
+        return (DecimalFormat) STATS_DECIMAL.clone();
     }
 }

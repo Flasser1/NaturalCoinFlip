@@ -1,11 +1,15 @@
 package me.flasser.naturalcoinflip.utility.misc;
 
+import eu.okaeri.commands.bukkit.annotation.Async;
+import eu.okaeri.platform.core.annotation.Component;
+
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+@Component
+@Async
 public class FormatNumber {
     private static final NavigableMap<Double, String> suffixes = new TreeMap<>();
     static String[] suffixArr = {"K","M","B","T","Qa","Qi","Sx","Sp","Oc","No","Dc","Udc","Ddc","Tdc","Qadc","Qidc","Sxdc","Spdc","Ocdc","Nmdc","Vg","Uvg","Dvg","Tvg","Qavg","Qivg","Sxvg","Spvg","Ovg","Nvg","Tg","Utg","Dtg"};

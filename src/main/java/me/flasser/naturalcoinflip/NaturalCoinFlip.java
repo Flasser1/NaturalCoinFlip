@@ -1,60 +1,62 @@
 package me.flasser.naturalcoinflip;
 
-import me.flasser.naturalcoinflip.commands.cfCommands.CoinFlipGroup;
-import me.flasser.naturalcoinflip.commands.cfaCommands.CoinFlipAdminGroup;
+import eu.okaeri.injector.annotation.Inject;
+import eu.okaeri.platform.bukkit.OkaeriBukkitPlugin;
+import eu.okaeri.platform.core.plan.ExecutionPhase;
+import eu.okaeri.platform.core.plan.Planned;
 import me.flasser.naturalcoinflip.managers.CacheManager;
 import me.flasser.naturalcoinflip.managers.FileManager;
 import me.flasser.naturalcoinflip.managers.SQLManager;
-import me.flasser.naturalcoinflip.menues.cfMenu.CFMenuListener;
 import net.milkbowl.vault.economy.Economy;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.plugin.java.JavaPlugin;
 
-public final class NaturalCoinFlip extends JavaPlugin {
+public final class NaturalCoinFlip extends OkaeriBukkitPlugin {
+    @Inject
+    private FileManager fileManager;
 
-    private static NaturalCoinFlip instance;
+    @Inject
+    private SQLManager sqlManager;
+
+    @Inject
+    private CacheManager cacheManager;
+
     private static Economy econ = null;
 
-    @Override
-    public void onEnable() {
+    @Planned(ExecutionPhase.STARTUP)
+    public void onStartup() {
+        getLogger().info("NATURALCOINFLIP: STARTING UP");
         if (!setupEconomy() ) {
             getLogger().severe(String.format("[%s] - Disabled due to no Vault dependency found!", getDescription().getName()));
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
 
-        instance = this;
-
         saveDefaultConfig();
-        FileManager.createMessages();
-        CacheManager.createCache();
+    }
 
-        SQLManager.connect();
+    @Planned(ExecutionPhase.POST_SETUP)
+    public void afterSetup() {
+        fileManager.createMessages();
+        getLogger().info("NATURALCOINFLIP: MESSAGES SETUP");
+        cacheManager.createCache();
+        getLogger().info("NATURALCOINFLIP: CACHE SETUP");
 
-        if (!SQLManager.isSetUp()) {
-            SQLManager.setUp();
+        sqlManager.connect();
+
+        if (!sqlManager.isSetUp()) {
+            sqlManager.setUp();
         }
+        getLogger().info("NATURALCOINFLIP: SQL SETUP");
 
         int pluginId = 26996;
         Metrics metrics = new Metrics(this, pluginId);
-
-        getServer().getPluginManager().registerEvents(new CFMenuListener(), this);
-
-        getCommand("cf").setExecutor(new CoinFlipGroup());
-        getCommand("cf").setTabCompleter(new CoinFlipGroup());
-        getCommand("cfa").setExecutor(new CoinFlipAdminGroup());
-        getCommand("cfa").setTabCompleter(new CoinFlipAdminGroup());
     }
 
-    @Override
-    public void onDisable() {
+    @Planned(ExecutionPhase.SHUTDOWN)
+    public void onShutdown() {
+        sqlManager.disconnect();
         getLogger().info(String.format("[%s] Disabled Version %s", getDescription().getName(), getDescription().getVersion()));
-        SQLManager.disconnect();
-    }
-
-    public static NaturalCoinFlip getInstance() {
-        return instance;
     }
 
     public static Economy getEcon() {

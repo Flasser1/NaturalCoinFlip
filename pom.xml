@@ -70,6 +70,10 @@
           <id>jitpack.io</id>
           <url>https://jitpack.io</url>
       </repository>
+      <repository>
+          <id>okaeri-repo</id>
+          <url>https://storehouse.okaeri.eu/repository/maven-public/</url>
+      </repository>
   </repositories>
 
   <dependencies>
@@ -95,6 +99,12 @@
           <artifactId>VaultAPI</artifactId>
           <version>1.7</version>
           <scope>provided</scope>
+      </dependency>
+      <dependency>
+          <groupId>eu.okaeri</groupId>
+          <artifactId>okaeri-platform-bukkit</artifactId>
+          <version>0.4.0-preview54</version>
+          <scope>compile</scope>
       </dependency>
   </dependencies>
 </project>

@@ -1,17 +1,20 @@
 package me.flasser.naturalcoinflip.managers;
 
+import eu.okaeri.commands.bukkit.annotation.Async;
+import eu.okaeri.injector.annotation.Inject;
+import eu.okaeri.platform.core.annotation.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 
 import java.io.File;
 import java.sql.*;
-
+@Component
+@Async
 public class SQLManager {
-    public static Connection con;
+    public Connection con;
+    ConsoleCommandSender console = Bukkit.getConsoleSender();
 
-    static ConsoleCommandSender console = Bukkit.getConsoleSender();
-
-    public static void connect() {
+    public void connect() {
         if (!isConnected()) {
 
             File dataFolder = Bukkit.getPluginManager().getPlugin("NaturalCoinFlip").getDataFolder();
@@ -37,7 +40,7 @@ public class SQLManager {
         }
     }
 
-    public static void disconnect() {
+    public void disconnect() {
         if (isConnected()) {
             try {
                 con.close();
@@ -48,15 +51,15 @@ public class SQLManager {
         }
     }
 
-    public static boolean isConnected() {
+    public boolean isConnected() {
         return (con != null);
     }
 
-    public static Connection getConnection() {
+    public Connection getConnection() {
         return con;
     }
 
-    public static boolean isSetUp() {
+    public boolean isSetUp() {
         if (!isConnected()) {
             return false;
         }
@@ -80,7 +83,7 @@ public class SQLManager {
     }
 
 
-    public static void setUp() {
+    public void setUp() {
         if (!isConnected()) {
             return;
         }
