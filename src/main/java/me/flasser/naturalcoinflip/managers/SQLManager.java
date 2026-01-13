@@ -3,14 +3,35 @@ package me.flasser.naturalcoinflip.managers;
 import eu.okaeri.commands.bukkit.annotation.Async;
 import eu.okaeri.injector.annotation.Inject;
 import eu.okaeri.platform.core.annotation.Component;
+import eu.okaeri.platform.core.plan.ExecutionPhase;
+import eu.okaeri.platform.core.plan.Planned;
+import me.flasser.naturalcoinflip.NaturalCoinFlip;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 
 import java.io.File;
 import java.sql.*;
 @Component
-@Async
 public class SQLManager {
+
+    private @Inject NaturalCoinFlip plugin;
+
+    @Planned(ExecutionPhase.POST_SETUP)
+    public void initialize() {
+        plugin.getLogger().info("NATURALCOINFLIP: CONNECTING TO DATABASE");
+        this.connect();
+        if (!this.isSetUp()) {
+            plugin.getLogger().info("NATURALCOINFLIP: SETTING UP DATABASE");
+            this.setUp();
+        }
+    }
+
+    @Planned(ExecutionPhase.SHUTDOWN)
+    public void shutdown() {
+        plugin.getLogger().info("NATURALCOINFLIP: DISCONNECTING FROM DATABASE");
+        this.disconnect();
+    }
+
     public Connection con;
     ConsoleCommandSender console = Bukkit.getConsoleSender();
 
@@ -31,7 +52,7 @@ public class SQLManager {
 
                 con.createStatement().execute("PRAGMA foreign_keys = ON;");
 
-                console.sendMessage("NATURALCOINFLIP: DATABASE CONNECTED");
+                plugin.getLogger().info("NATURALCOINFLIP: DATABASE CONNECTED");
             } catch (SQLException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
@@ -44,7 +65,7 @@ public class SQLManager {
         if (isConnected()) {
             try {
                 con.close();
-                console.sendMessage("NATURALCOINFLIP: DATABASE DISCONNECTED");
+                plugin.getLogger().info("NATURALCOINFLIP: DATABASE DISCONNECTED");
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -62,26 +83,20 @@ public class SQLManager {
     public boolean isSetUp() {
         if (!isConnected()) {
             return false;
-        }
-
-        try {
+        } try {
             Statement stmt = con.createStatement();
-
             String[] tables = {"Flips"};
             for (String table : tables) {
                 ResultSet rs = stmt.executeQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='" + table + "'");
-
                 if (!rs.next()) {
                     return false;
                 }
-            }
-            return true;
+            } return true;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
-
 
     public void setUp() {
         if (!isConnected()) {
@@ -101,7 +116,7 @@ public class SQLManager {
                     "Lost INT NOT NULL" +
                     ");");
 
-            console.sendMessage("NATURALCOINFLIP: DATABASE TABLES SETUP COMPLETE");
+            plugin.getLogger().info("NATURALCOINFLIP: DATABASE SETUP COMPLETE");
 
         } catch (SQLException e) {
             e.printStackTrace();

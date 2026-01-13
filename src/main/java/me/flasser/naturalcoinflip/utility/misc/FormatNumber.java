@@ -21,7 +21,7 @@ public class FormatNumber {
             value *= 1_000D;
         }
     }
-    public static String format(double value) {
+    public String format(double value) {
         if (value < 0) return "-" + format(-value);
         if (value < 1000) return String.valueOf((long) value);
 
@@ -37,7 +37,7 @@ public class FormatNumber {
                 : String.format("%.0f%s", truncated / 10.0, suffix);
     }
 
-    public static Double formatDou(String value) {
+    public Double formatDou(String value) {
         try {
             return Double.valueOf(value);
         } catch (NumberFormatException e) {}
@@ -64,7 +64,7 @@ public class FormatNumber {
         return Double.parseDouble(numberPart)*Math.pow(1000, index);
     }
 
-    public static Integer formatInt(String value) {
+    public Integer formatInt(String value) {
         Double result = formatDou(value);
         if (result == null) return null;
 

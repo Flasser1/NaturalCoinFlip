@@ -2,16 +2,18 @@ package me.flasser.naturalcoinflip.commands;
 
 import eu.okaeri.commands.annotation.Arg;
 import eu.okaeri.commands.annotation.Command;
+import eu.okaeri.commands.annotation.Context;
 import eu.okaeri.commands.annotation.Executor;
 import eu.okaeri.commands.bukkit.annotation.Async;
 import eu.okaeri.commands.bukkit.annotation.Permission;
+import eu.okaeri.commands.service.CommandService;
 import eu.okaeri.injector.annotation.Inject;
 import eu.okaeri.platform.core.annotation.Component;
 import me.flasser.naturalcoinflip.NaturalCoinFlip;
 import me.flasser.naturalcoinflip.managers.CacheManager;
 import me.flasser.naturalcoinflip.managers.FileManager;
 import me.flasser.naturalcoinflip.managers.FlipManager;
-import org.bukkit.command.CommandSender;
+import me.flasser.naturalcoinflip.utility.misc.FormatNumber;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -19,68 +21,51 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import static me.flasser.naturalcoinflip.utility.misc.FormatNumber.format;
-import static me.flasser.naturalcoinflip.utility.misc.FormatNumber.formatInt;
-
 @Component
-@Async
 @Command(
         label = "cfa",
         aliases = {"cfadmin", "coinfa", "cflipa", "coinflipadmin"}
 )
+@Async
 @Permission({"naturalstuff.*", "naturalcoinflip.*", "naturalcoinflip.cfa.*", "naturalcoinflip.cfa"})
-public class CfaCommands {
-    private final NaturalCoinFlip plugin;
-
-    @Inject
-    public CfaCommands(NaturalCoinFlip plugin) {
-        this.plugin = plugin;
-    }
-
-    @Inject
-    private FileManager fileManager;
-
-    @Inject
-    private CacheManager cacheManager;
-
-    @Inject
-    private FlipManager flipManager;
+public class CfaCommands implements CommandService {
+    private @Inject NaturalCoinFlip plugin;
+    private @Inject FileManager fileManager;
+    private @Inject CacheManager cacheManager;
+    private @Inject FlipManager flipManager;
+    private @Inject FormatNumber formatNumber;
 
     /* ---------------- DEFAULT ---------------- */
 
-    @Executor(pattern = "")
-    @Permission({"naturalstuff.*", "naturalcombat.*", "naturalcombat.cta.*", "naturalcombat.cta.reload"})
-    public void defaultCommand(CommandSender sender) {
-        sender.sendMessage("d");
+    @Executor
+    @Permission({"naturalstuff.*", "naturalcoinflip.*", "naturalcoinflip.cfa.*", "naturalcoinflip.cfa"})
+    public void _def(@Context Player player) {
+        player.sendMessage("d");
     }
 
     /* ---------------- ADDLOSS ---------------- */
 
     @Executor(pattern = "addloss")
-    @Permission({"naturalstuff.*", "naturalcombat.*", "naturalcombat.cta.*", "naturalcombat.cta.reload"})
-    public void addloss(CommandSender sender) {
-        Player player = (Player) sender;
+    @Permission({"naturalstuff.*", "naturalcoinflip.*", "naturalcoinflip.cfa.*", "naturalcoinflip.cfa.addloss"})
+    public void addloss(@Context Player player) {
         player.sendMessage(fileManager.getMessage("player_not_specified"));
     }
 
-    @Executor(pattern = "addloss")
-    @Permission({"naturalstuff.*", "naturalcombat.*", "naturalcombat.cta.*", "naturalcombat.cta.reload"})
-    public void addloss(CommandSender sender, @Arg("player") Player target) {
-        Player player = (Player) sender;
+    @Executor(pattern = "addloss <player>")
+    @Permission({"naturalstuff.*", "naturalcoinflip.*", "naturalcoinflip.cfa.*", "naturalcoinflip.cfa.addloss"})
+    public void addloss(@Context Player player, @Arg("player") Player target) {
         player.sendMessage(fileManager.getMessage("addloss_not_specified"));
     }
 
-    @Executor(pattern = "addloss")
-    @Permission({"naturalstuff.*", "naturalcombat.*", "naturalcombat.cta.*", "naturalcombat.cta.reload"})
-    public void addloss(CommandSender sender, @Arg("player") Player target, @Arg("amount") String raw) {
-        Player player = (Player) sender;
-
+    @Executor(pattern = "addloss <player> <amount>")
+    @Permission({"naturalstuff.*", "naturalcoinflip.*", "naturalcoinflip.cfa.*", "naturalcoinflip.cfa.addloss"})
+    public void addloss(@Context Player player, @Arg("player") Player target, @Arg("amount") String raw) {
         if (!target.hasPlayedBefore()) {
             player.sendMessage(fileManager.getMessage("player_not_joined"));
             return;
         }
 
-        Integer amount = formatInt(raw);
+        Integer amount = formatNumber.formatInt(raw);
         if (amount == null) {
             player.sendMessage(fileManager.getMessage("not_a_number"));
             return;
@@ -89,35 +74,31 @@ public class CfaCommands {
         flipManager.addLost(target.getUniqueId(), amount);
 
         player.sendMessage(fileManager.getMessage("addloss_added")
-                .replace("{amount}", format(amount))
+                .replace("{amount}", formatNumber.format(amount))
                 .replace("{player}", target.getName()));
     }
 
     @Executor(pattern = "remloss")
-    @Permission({"naturalstuff.*", "naturalcombat.*", "naturalcombat.cta.*", "naturalcombat.cta.reload"})
-    public void remloss(CommandSender sender) {
-        Player player = (Player) sender;
+    @Permission({"naturalstuff.*", "naturalcoinflip.*", "naturalcoinflip.cfa.*", "naturalcoinflip.cfa.remloss"})
+    public void remloss(@Context Player player) {
         player.sendMessage(fileManager.getMessage("player_not_specified"));
     }
 
-    @Executor(pattern = "remloss")
-    @Permission({"naturalstuff.*", "naturalcombat.*", "naturalcombat.cta.*", "naturalcombat.cta.reload"})
-    public void remloss(CommandSender sender, @Arg("player") Player target) {
-        Player player = (Player) sender;
+    @Executor(pattern = "remloss <player>")
+    @Permission({"naturalstuff.*", "naturalcoinflip.*", "naturalcoinflip.cfa.*", "naturalcoinflip.cfa.remloss"})
+    public void remloss(@Context Player player, @Arg("player") Player target) {
         player.sendMessage(fileManager.getMessage("remloss_not_specified"));
     }
 
-    @Executor(pattern = "remloss")
-    @Permission({"naturalstuff.*", "naturalcombat.*", "naturalcombat.cta.*", "naturalcombat.cta.reload"})
-    public void remloss(CommandSender sender, @Arg("player") Player target, @Arg("amount") String raw) {
-        Player player = (Player) sender;
-
+    @Executor(pattern = "remloss <player> <amount>")
+    @Permission({"naturalstuff.*", "naturalcoinflip.*", "naturalcoinflip.cfa.*", "naturalcoinflip.cfa.remloss"})
+    public void remloss(@Context Player player, @Arg("player") Player target, @Arg("amount") String raw) {
         if (!target.hasPlayedBefore()) {
             player.sendMessage(fileManager.getMessage("player_not_joined"));
             return;
         }
 
-        Integer amount = formatInt(raw);
+        Integer amount = formatNumber.formatInt(raw);
         if (amount == null) {
             player.sendMessage(fileManager.getMessage("not_a_number"));
             return;
@@ -126,36 +107,33 @@ public class CfaCommands {
         flipManager.removeLost(target.getUniqueId(), amount);
 
         player.sendMessage(fileManager.getMessage("remloss_removed")
-                .replace("{amount}", format(amount))
+                .replace("{amount}", formatNumber.format(amount))
                 .replace("{player}", target.getName()));
     }
 
     /* ---------------- ADDWIN ---------------- */
 
     @Executor(pattern = "addwin")
-    @Permission({"naturalstuff.*", "naturalcombat.*", "naturalcombat.cta.*", "naturalcombat.cta.reload"})
-    public void addwin(CommandSender sender) {
-        Player player = (Player) sender;
+    @Permission({"naturalstuff.*", "naturalcoinflip.*", "naturalcoinflip.cfa.*", "naturalcoinflip.cfa.addwin"})
+    public void addwin(@Context Player player) {
         player.sendMessage(fileManager.getMessage("player_not_specified"));
     }
 
-    @Executor(pattern = "addwin")
-    @Permission({"naturalstuff.*", "naturalcombat.*", "naturalcombat.cta.*", "naturalcombat.cta.reload"})
-    public void addwin(CommandSender sender, @Arg("player") Player target) {
-        Player player = (Player) sender;
+    @Executor(pattern = "addwin <player>")
+    @Permission({"naturalstuff.*", "naturalcoinflip.*", "naturalcoinflip.cfa.*", "naturalcoinflip.cfa.addwin"})
+    public void addwin(@Context Player player, @Arg("player") Player target) {
         player.sendMessage(fileManager.getMessage("addwin_not_specified"));
     }
 
-    @Executor(pattern = "addwin")
-    @Permission({"naturalstuff.*", "naturalcombat.*", "naturalcombat.cta.*", "naturalcombat.cta.reload"})
-    public void addwin(CommandSender sender, @Arg("player") Player target, @Arg("amount") String raw) {
-        Player player = (Player) sender;
+    @Executor(pattern = "addwin <player> <amount>")
+    @Permission({"naturalstuff.*", "naturalcoinflip.*", "naturalcoinflip.cfa.*", "naturalcoinflip.cfa.addwin"})
+    public void addwin(@Context Player player, @Arg("player") Player target, @Arg("amount") String raw) {
         if (!target.hasPlayedBefore()) {
             player.sendMessage(fileManager.getMessage("player_not_joined"));
             return;
         }
 
-        Integer amount = formatInt(raw);
+        Integer amount = formatNumber.formatInt(raw);
         if (amount == null) {
             player.sendMessage(fileManager.getMessage("not_a_number"));
             return;
@@ -164,35 +142,31 @@ public class CfaCommands {
         flipManager.addWon(target.getUniqueId(), amount);
 
         player.sendMessage(fileManager.getMessage("addwin_added")
-                .replace("{amount}", format(amount))
+                .replace("{amount}", formatNumber.format(amount))
                 .replace("{player}", target.getName()));
     }
 
     @Executor(pattern = "remwin")
-    @Permission({"naturalstuff.*", "naturalcombat.*", "naturalcombat.cta.*", "naturalcombat.cta.reload"})
-    public void remwin(CommandSender sender) {
-        Player player = (Player) sender;
+    @Permission({"naturalstuff.*", "naturalcoinflip.*", "naturalcoinflip.cfa.*", "naturalcoinflip.cfa.remwin"})
+    public void remwin(@Context Player player) {
         player.sendMessage(fileManager.getMessage("player_not_specified"));
     }
 
-    @Executor(pattern = "remwin")
-    @Permission({"naturalstuff.*", "naturalcombat.*", "naturalcombat.cta.*", "naturalcombat.cta.reload"})
-    public void remwin(CommandSender sender, @Arg("player") Player target) {
-        Player player = (Player) sender;
+    @Executor(pattern = "remwin <player>")
+    @Permission({"naturalstuff.*", "naturalcoinflip.*", "naturalcoinflip.cfa.*", "naturalcoinflip.cfa.remwin"})
+    public void remwin(@Context Player player, @Arg("player") Player target) {
         player.sendMessage(fileManager.getMessage("remwin_not_specified"));
     }
 
-    @Executor(pattern = "remwin")
-    @Permission({"naturalstuff.*", "naturalcombat.*", "naturalcombat.cta.*", "naturalcombat.cta.reload"})
-    public void remwin(CommandSender sender, @Arg("player") Player target, @Arg("amount") String raw) {
-        Player player = (Player) sender;
-
+    @Executor(pattern = "remwin <player> <amount>")
+    @Permission({"naturalstuff.*", "naturalcoinflip.*", "naturalcoinflip.cfa.*", "naturalcoinflip.cfa.remwin"})
+    public void remwin(@Context Player player, @Arg("player") Player target, @Arg("amount") String raw) {
         if (!target.hasPlayedBefore()) {
             player.sendMessage(fileManager.getMessage("player_not_joined"));
             return;
         }
 
-        Integer amount = formatInt(raw);
+        Integer amount = formatNumber.formatInt(raw);
         if (amount == null) {
             player.sendMessage(fileManager.getMessage("not_a_number"));
             return;
@@ -201,7 +175,7 @@ public class CfaCommands {
         flipManager.removeWon(target.getUniqueId(), amount);
 
         player.sendMessage(fileManager.getMessage("remwin_removed")
-                .replace("{amount}", format(amount))
+                .replace("{amount}", formatNumber.format(amount))
                 .replace("{player}", target.getName()));
     }
 
@@ -209,17 +183,14 @@ public class CfaCommands {
     /* ---------------- DELETE ---------------- */
 
     @Executor(pattern = "delete")
-    @Permission({"naturalstuff.*", "naturalcombat.*", "naturalcombat.cta.*", "naturalcombat.cta.reload"})
-    public void delete(CommandSender sender) {
-        Player player = (Player) sender;
+    @Permission({"naturalstuff.*", "naturalcoinflip.*", "naturalcoinflip.cfa.*", "naturalcoinflip.cfa.delete"})
+    public void delete(@Context Player player) {
         player.sendMessage(fileManager.getMessage("player_not_specified"));
     }
 
-    @Executor(pattern = "delete")
-    @Permission({"naturalstuff.*", "naturalcombat.*", "naturalcombat.cta.*", "naturalcombat.cta.reload"})
-    public void delete(CommandSender sender, @Arg("player") Player target) {
-        Player player = (Player) sender;
-
+    @Executor(pattern = "delete <player>")
+    @Permission({"naturalstuff.*", "naturalcoinflip.*", "naturalcoinflip.cfa.*", "naturalcoinflip.cfa.delete"})
+    public void delete(@Context Player player, @Arg("player") Player target) {
         if (!target.hasPlayedBefore()) {
             player.sendMessage(fileManager.getMessage("player_not_joined"));
             return;
@@ -243,17 +214,14 @@ public class CfaCommands {
     /* ---------------- INFO ---------------- */
 
     @Executor(pattern = "info")
-    @Permission({"naturalstuff.*", "naturalcombat.*", "naturalcombat.cta.*", "naturalcombat.cta.reload"})
-    public void info(CommandSender sender) {
-        Player player = (Player) sender;
+    @Permission({"naturalstuff.*", "naturalcoinflip.*", "naturalcoinflip.cfa.*", "naturalcoinflip.cfa.info"})
+    public void info(@Context Player player) {
         player.sendMessage(fileManager.getMessage("player_not_specified"));
     }
 
-    @Executor(pattern = "info")
-    @Permission({"naturalstuff.*", "naturalcombat.*", "naturalcombat.cta.*", "naturalcombat.cta.reload"})
-    public void info(CommandSender sender, @Arg("player") Player target) {
-        Player player = (Player) sender;
-
+    @Executor(pattern = "info <player>")
+    @Permission({"naturalstuff.*", "naturalcoinflip.*", "naturalcoinflip.cfa.*", "naturalcoinflip.cfa.info"})
+    public void info(@Context Player player, @Arg("player") Player target) {
         if (!target.hasPlayedBefore()) {
             player.sendMessage(fileManager.getMessage("player_not_joined"));
             return;
@@ -266,7 +234,7 @@ public class CfaCommands {
             out.add(line
                     .replace("{player}", target.getName())
                     .replace("{date}", new Date(info.creation).toString())
-                    .replace("{amount}", format(info.amount)));
+                    .replace("{amount}", formatNumber.format(info.amount)));
         }
 
         player.sendMessage(out.toArray(new String[0]));
@@ -275,17 +243,14 @@ public class CfaCommands {
     /* ---------------- RESET ---------------- */
 
     @Executor(pattern = "reset")
-    @Permission({"naturalstuff.*", "naturalcombat.*", "naturalcombat.cta.*", "naturalcombat.cta.reload"})
-    public void reset(CommandSender sender) {
-        Player player = (Player) sender;
+    @Permission({"naturalstuff.*", "naturalcoinflip.*", "naturalcoinflip.cfa.*", "naturalcoinflip.cfa.reset"})
+    public void reset(@Context Player player) {
         player.sendMessage(fileManager.getMessage("player_not_specified"));
     }
 
-    @Executor(pattern = "reset")
-    @Permission({"naturalstuff.*", "naturalcombat.*", "naturalcombat.cta.*", "naturalcombat.cta.reload"})
-    public void reset(CommandSender sender, @Arg("player") Player target) {
-        Player player = (Player) sender;
-
+    @Executor(pattern = "reset <player>")
+    @Permission({"naturalstuff.*", "naturalcoinflip.*", "naturalcoinflip.cfa.*", "naturalcoinflip.cfa.reset"})
+    public void reset(@Context Player player, @Arg("player") Player target) {
         if (!target.hasPlayedBefore()) {
             player.sendMessage(fileManager.getMessage("player_not_joined"));
             return;
@@ -300,17 +265,14 @@ public class CfaCommands {
     /* ---------------- STATS ---------------- */
 
     @Executor(pattern = "stats")
-    @Permission({"naturalstuff.*", "naturalcombat.*", "naturalcombat.cta.*", "naturalcombat.cta.reload"})
-    public void stats(CommandSender sender) {
-        Player player = (Player) sender;
+    @Permission({"naturalstuff.*", "naturalcoinflip.*", "naturalcoinflip.cfa.*", "naturalcoinflip.cfa.stats"})
+    public void stats(@Context Player player) {
         player.sendMessage(fileManager.getMessage("player_not_specified"));
     }
 
-    @Executor(pattern = "stats")
-    @Permission({"naturalstuff.*", "naturalcombat.*", "naturalcombat.cta.*", "naturalcombat.cta.reload"})
-    public void stats(CommandSender sender, @Arg("player") Player target) {
-        Player player = (Player) sender;
-
+    @Executor(pattern = "stats <player>")
+    @Permission({"naturalstuff.*", "naturalcoinflip.*", "naturalcoinflip.cfa.*", "naturalcoinflip.cfa.stats"})
+    public void stats(@Context Player player, @Arg("player") Player target) {
         if (!target.hasPlayedBefore()) {
             player.sendMessage(fileManager.getMessage("player_not_joined"));
             return;
@@ -339,17 +301,14 @@ public class CfaCommands {
     /* ---------------- VOID ---------------- */
 
     @Executor(pattern = "void")
-    @Permission({"naturalstuff.*", "naturalcombat.*", "naturalcombat.cta.*", "naturalcombat.cta.reload"})
-    public void tovoid(CommandSender sender) {
-        Player player = (Player) sender;
+    @Permission({"naturalstuff.*", "naturalcoinflip.*", "naturalcoinflip.cfa.*", "naturalcoinflip.cfa.void"})
+    public void tovoid(@Context Player player) {
         player.sendMessage(fileManager.getMessage("player_not_specified"));
     }
 
-    @Executor(pattern = "void")
-    @Permission({"naturalstuff.*", "naturalcombat.*", "naturalcombat.cta.*", "naturalcombat.cta.reload"})
-    public void tovoid(CommandSender sender, @Arg("player") Player target) {
-        Player player = (Player) sender;
-
+    @Executor(pattern = "void <player>")
+    @Permission({"naturalstuff.*", "naturalcoinflip.*", "naturalcoinflip.cfa.*", "naturalcoinflip.cfa.void"})
+    public void tovoid(@Context Player player, @Arg("player") Player target) {
         if (!target.hasPlayedBefore()) {
             player.sendMessage(fileManager.getMessage("player_not_joined"));
             return;
@@ -367,11 +326,11 @@ public class CfaCommands {
     /* ---------------- RELOAD ---------------- */
 
     @Executor(pattern = "reload")
-    @Permission({"naturalstuff.*", "naturalcombat.*", "naturalcombat.cta.*", "naturalcombat.cta.reload"})
-    public void reload(CommandSender sender) {
+    @Permission({"naturalstuff.*", "naturalcoinflip.*", "naturalcoinflip.cfa.*", "naturalcoinflip.cfa.reload"})
+    public void reload(@Context Player player) {
         plugin.saveDefaultConfig();
         fileManager.createMessages();
         cacheManager.createCache();
-        sender.sendMessage(fileManager.getMessage("reload_success"));
+        player.sendMessage(fileManager.getMessage("reload_success"));
     }
 }

@@ -8,6 +8,7 @@ import me.flasser.naturalcoinflip.managers.CacheManager;
 import me.flasser.naturalcoinflip.managers.FileManager;
 import me.flasser.naturalcoinflip.managers.FlipManager;
 import me.flasser.naturalcoinflip.utility.itemUtil.NamedItem;
+import me.flasser.naturalcoinflip.utility.misc.FormatNumber;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -18,27 +19,16 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.*;
 
-import static me.flasser.naturalcoinflip.managers.CacheManager.*;
-import static me.flasser.naturalcoinflip.utility.misc.FormatNumber.format;
 @Component
-@Async
 public class CFMenu {
-    private final NaturalCoinFlip plugin;
 
-    @Inject
-    public CFMenu(NaturalCoinFlip plugin) {
-        this.plugin = plugin;
-    }
+    private @Inject NaturalCoinFlip plugin;
+    private @Inject CacheManager cacheManager;
+    private @Inject FileManager fileManager;
+    private @Inject FlipManager flipManager;
+    private @Inject FormatNumber formatNumber;
 
-    @Inject
-    private CacheManager cacheManager;
-
-    @Inject
-    private FileManager fileManager;
-
-    @Inject
-    private FlipManager flipManager;
-
+    @Async
     public void openCFMenu(Player player, int page) {
         FlipManager.PlayerInfo info = flipManager.getPlayerInfo(player.getUniqueId());
         int wins = info != null && info.wins != null ? info.wins : 0;
@@ -113,7 +103,7 @@ public class CFMenu {
             for (String lore : fileManager.getListMessage("flip_lore")) {
                 newLore = lore
                         .replace("{player}", offlinePlayer.getName())
-                        .replace("{amount}", format(amount));
+                        .replace("{amount}", formatNumber.format(amount));
 
                 newestLoreList.add(newLore);
             }

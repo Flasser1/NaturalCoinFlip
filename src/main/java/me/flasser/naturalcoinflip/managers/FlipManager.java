@@ -3,17 +3,20 @@ package me.flasser.naturalcoinflip.managers;
 import eu.okaeri.commands.bukkit.annotation.Async;
 import eu.okaeri.injector.annotation.Inject;
 import eu.okaeri.platform.core.annotation.Component;
+import me.flasser.naturalcoinflip.NaturalCoinFlip;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-@Component
-@Async
-public class FlipManager {
-    @Inject
-    private SQLManager sqlManager;
 
+@Component
+public class FlipManager {
+
+    private @Inject NaturalCoinFlip plugin;
+    private @Inject SQLManager sqlManager;
+
+    @Async
     public void addFlip(UUID player, double amount) {
         if (!sqlManager.isConnected()) {
             return;
@@ -32,6 +35,7 @@ public class FlipManager {
         }
     }
 
+    @Async
     public void overrideFlip(UUID player, double amount) {
         if (!sqlManager.isConnected()) {
             return;
@@ -41,6 +45,7 @@ public class FlipManager {
         addFlip(player, amount);
     }
 
+    @Async
     public void removeFlip(UUID player) {
         if (!sqlManager.isConnected()) {
             return;
@@ -55,6 +60,7 @@ public class FlipManager {
         }
     }
 
+    @Async
     public boolean hasFlip(UUID player) {
         if (!sqlManager.isConnected()) {
             return false;
@@ -75,6 +81,7 @@ public class FlipManager {
         return false;
     }
 
+    @Async
     public FlipInfo getFlipInfo(UUID player) {
         if (!sqlManager.isConnected()) {
             return null;
@@ -101,6 +108,7 @@ public class FlipManager {
         return null;
     }
 
+    @Async
     public PlayerInfo getPlayerInfo(UUID player) {
         if (!sqlManager.isConnected()) {
             return null;
@@ -127,6 +135,7 @@ public class FlipManager {
         return null;
     }
 
+    @Async
     public List<UUID> getAllFlips() {
         if (!sqlManager.isConnected()) {
             return null;
@@ -149,6 +158,7 @@ public class FlipManager {
         return flipUUIDs;
     }
 
+    @Async
     public void updateSQLPlayer(UUID UUID) {
         if (!sqlManager.isConnected()) {
             return;
@@ -161,11 +171,12 @@ public class FlipManager {
             ps.setInt(3, 0);
             ps.executeUpdate();
         } catch (SQLException ex) {
-            System.err.println("Failed to insert/update Players: " + ex.getMessage());
+            plugin.getLogger().info("Failed to insert/update Players: " + ex.getMessage());
             ex.printStackTrace();
         }
     }
 
+    @Async
     public void resetPlayer(UUID player) {
         if (!sqlManager.isConnected()) {
             return;
@@ -180,6 +191,7 @@ public class FlipManager {
         }
     }
 
+    @Async
     public void addWon(UUID player, int amount) {
         if (!sqlManager.isConnected()) {
             return;
@@ -195,6 +207,7 @@ public class FlipManager {
         }
     }
 
+    @Async
     public void addLost(UUID player, int amount) {
         if (!sqlManager.isConnected()) {
             return;
@@ -210,6 +223,7 @@ public class FlipManager {
         }
     }
 
+    @Async
     public void removeWon(UUID player, int amount) {
         if (!sqlManager.isConnected()) {
             return;
@@ -225,6 +239,7 @@ public class FlipManager {
         }
     }
 
+    @Async
     public void removeLost(UUID player, int amount) {
         if (!sqlManager.isConnected()) {
             return;
@@ -239,7 +254,6 @@ public class FlipManager {
             e.printStackTrace();
         }
     }
-
 
     public class FlipInfo {
         public UUID UUID;

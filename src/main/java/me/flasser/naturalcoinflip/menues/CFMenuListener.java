@@ -7,6 +7,7 @@ import me.flasser.naturalcoinflip.NaturalCoinFlip;
 import me.flasser.naturalcoinflip.managers.FileManager;
 import me.flasser.naturalcoinflip.managers.FlipManager;
 import me.flasser.naturalcoinflip.utility.misc.ActionbarUtil;
+import me.flasser.naturalcoinflip.utility.misc.FormatNumber;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -19,28 +20,17 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.*;
 
-import static me.flasser.naturalcoinflip.utility.misc.FormatNumber.format;
-
 @Component
-@Async
 public class CFMenuListener implements Listener {
-    private final NaturalCoinFlip plugin;
 
-    @Inject
-    public CFMenuListener(NaturalCoinFlip plugin) {
-        this.plugin = plugin;
-    }
-
-    @Inject
-    private FileManager fileManager;
-
-    @Inject
-    private CFMenu cfMenu;
-
-    @Inject
-    private FlipManager flipManager;
+    private @Inject NaturalCoinFlip plugin;
+    private @Inject FileManager fileManager;
+    private @Inject CFMenu cfMenu;
+    private @Inject FlipManager flipManager;
+    private @Inject FormatNumber formatNumber;
 
     @EventHandler
+    @Async
     public void onInventoryClick(InventoryClickEvent e) {
         Player player = (Player) e.getWhoClicked();
 
@@ -134,8 +124,8 @@ public class CFMenuListener implements Listener {
 
                 NaturalCoinFlip.getEcon().depositPlayer(winner, amount*2*(1-plugin.getConfig().getLong("tax")));
 
-                ActionbarUtil.sendActionBar(winner, fileManager.getMessage("win").replace("{amount}", format(amount*2)));
-                ActionbarUtil.sendActionBar(loser, fileManager.getMessage("loss").replace("{amount}", format(amount*2)));
+                ActionbarUtil.sendActionBar(winner, fileManager.getMessage("win").replace("{amount}", formatNumber.format(amount*2)));
+                ActionbarUtil.sendActionBar(loser, fileManager.getMessage("loss").replace("{amount}", formatNumber.format(amount*2)));
 
                 winner.playSound(winner.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
                 loser.playSound(loser.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);

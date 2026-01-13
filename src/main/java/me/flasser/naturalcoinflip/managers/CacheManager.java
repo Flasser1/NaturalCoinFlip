@@ -3,6 +3,8 @@ package me.flasser.naturalcoinflip.managers;
 import eu.okaeri.commands.bukkit.annotation.Async;
 import eu.okaeri.injector.annotation.Inject;
 import eu.okaeri.platform.core.annotation.Component;
+import eu.okaeri.platform.core.plan.ExecutionPhase;
+import eu.okaeri.platform.core.plan.Planned;
 import me.flasser.naturalcoinflip.NaturalCoinFlip;
 import me.flasser.naturalcoinflip.utility.itemUtil.NamedItem;
 import org.bukkit.Material;
@@ -13,11 +15,12 @@ import java.text.DecimalFormat;
 @Component
 public class CacheManager {
 
-    private final NaturalCoinFlip plugin;
+    private @Inject NaturalCoinFlip plugin;
 
-    @Inject
-    public CacheManager(NaturalCoinFlip plugin) {
-        this.plugin = plugin;
+    @Planned(ExecutionPhase.POST_SETUP)
+    public void initialize() {
+        this.createCache();
+        plugin.getLogger().info("NATURALCOINFLIP: SETTING UP CACHE");
     }
 
     @Inject
