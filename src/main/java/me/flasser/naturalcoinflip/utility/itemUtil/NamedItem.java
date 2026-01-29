@@ -2,7 +2,6 @@ package me.flasser.naturalcoinflip.utility.itemUtil;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import eu.okaeri.commands.bukkit.annotation.Async;
 import eu.okaeri.platform.core.annotation.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -15,7 +14,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 @Component
-@Async
 public class NamedItem {
 
     private final ItemStack item;

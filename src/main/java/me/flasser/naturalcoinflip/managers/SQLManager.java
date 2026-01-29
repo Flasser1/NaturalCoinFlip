@@ -1,6 +1,5 @@
 package me.flasser.naturalcoinflip.managers;
 
-import eu.okaeri.commands.bukkit.annotation.Async;
 import eu.okaeri.injector.annotation.Inject;
 import eu.okaeri.platform.core.annotation.Component;
 import eu.okaeri.platform.core.plan.ExecutionPhase;
@@ -15,22 +14,6 @@ import java.sql.*;
 public class SQLManager {
 
     private @Inject NaturalCoinFlip plugin;
-
-    @Planned(ExecutionPhase.POST_SETUP)
-    public void initialize() {
-        plugin.getLogger().info("NATURALCOINFLIP: CONNECTING TO DATABASE");
-        this.connect();
-        if (!this.isSetUp()) {
-            plugin.getLogger().info("NATURALCOINFLIP: SETTING UP DATABASE");
-            this.setUp();
-        }
-    }
-
-    @Planned(ExecutionPhase.SHUTDOWN)
-    public void shutdown() {
-        plugin.getLogger().info("NATURALCOINFLIP: DISCONNECTING FROM DATABASE");
-        this.disconnect();
-    }
 
     public Connection con;
     ConsoleCommandSender console = Bukkit.getConsoleSender();

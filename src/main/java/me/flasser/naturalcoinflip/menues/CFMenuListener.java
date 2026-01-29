@@ -1,6 +1,5 @@
 package me.flasser.naturalcoinflip.menues;
 
-import eu.okaeri.commands.bukkit.annotation.Async;
 import eu.okaeri.injector.annotation.Inject;
 import eu.okaeri.platform.core.annotation.Component;
 import me.flasser.naturalcoinflip.NaturalCoinFlip;
@@ -30,7 +29,6 @@ public class CFMenuListener implements Listener {
     private @Inject FormatNumber formatNumber;
 
     @EventHandler
-    @Async
     public void onInventoryClick(InventoryClickEvent e) {
         Player player = (Player) e.getWhoClicked();
 

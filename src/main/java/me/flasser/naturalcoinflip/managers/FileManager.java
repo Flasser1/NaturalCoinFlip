@@ -1,10 +1,7 @@
 package me.flasser.naturalcoinflip.managers;
 
-import eu.okaeri.commands.bukkit.annotation.Async;
 import eu.okaeri.injector.annotation.Inject;
 import eu.okaeri.platform.core.annotation.Component;
-import eu.okaeri.platform.core.plan.ExecutionPhase;
-import eu.okaeri.platform.core.plan.Planned;
 import me.flasser.naturalcoinflip.NaturalCoinFlip;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -20,12 +17,6 @@ import java.nio.charset.StandardCharsets;
 public class FileManager {
 
     private @Inject NaturalCoinFlip plugin;
-
-    @Planned(ExecutionPhase.POST_SETUP)
-    public void initialize() {
-        this.createMessages();
-        plugin.getLogger().info("NATURALCOINFLIP: SETTING UP MESSAGES");
-    }
 
     private File messagesFile;
 
@@ -45,7 +36,6 @@ public class FileManager {
                 .toArray(String[]::new);
     }
 
-    @Async
     public void createMessages() {
         messagesFile = new File(plugin.getDataFolder(), "messages.yml");
         if (!messagesFile.exists()) {
